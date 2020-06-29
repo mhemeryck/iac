@@ -1,1 +1,6 @@
 tags
+.terraform/
+kube_key
+kube_key.pub
+terraform.tfstate
+*.backup
