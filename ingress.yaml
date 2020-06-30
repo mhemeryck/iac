@@ -1,0 +1,13 @@
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: traefik-ingress
+spec:
+  rules:
+    - host: cv.mhemeryck.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: cvsite-service
+              servicePort: 80

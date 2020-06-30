@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cvsite-app
+spec:
+  selector:
+    matchLabels:
+      app: cvsite
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: cvsite
+    spec:
+      containers:
+        - name: cvsite
+          image: mhemeryck/cvsite:latest
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cvsite-service
+  labels:
+    app: cvsite
+spec:
+  selector:
+    app: cvsite
+  ports:
+    - port: 80
