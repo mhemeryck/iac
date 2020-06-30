@@ -3,11 +3,25 @@ provider "digitalocean" {
 }
 
 resource "digitalocean_droplet" "kube" {
-	image = "debian-10-x64"
+	image = "centos-8-x64"
 	name = "kube"
 	region = "ams3"
 	size = "s-1vcpu-1gb"
 	ssh_keys = [digitalocean_ssh_key.kube_key.fingerprint]
+
+	provisioner "remote-exec" {
+		inline = [
+			"yum install -y container-selinux selinux-policy-base",
+			"rpm -i https://rpm.rancher.io/k3s-selinux-0.1.1-rc1.el7.noarch.rpm",
+		]
+
+		connection {
+			type = "ssh"
+			user = "root"
+			host = digitalocean_droplet.kube.ipv4_address
+			private_key = file("./kube_key")
+		}
+	}
 }
 
 resource "digitalocean_ssh_key" "kube_key" {
