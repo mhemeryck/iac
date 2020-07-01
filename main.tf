@@ -6,7 +6,7 @@ resource "digitalocean_droplet" "kube" {
 	image = "centos-8-x64"
 	name = "kube"
 	region = "ams3"
-	size = "s-1vcpu-1gb"
+	size = "s-1vcpu-2gb"
 	ssh_keys = [digitalocean_ssh_key.kube_key.fingerprint]
 
 	provisioner "remote-exec" {
