@@ -2,6 +2,18 @@
 
 terraform setup for personal projects
 
+todo:
+- [x] terraform infra setup: single node
+- [x] provision k3s
+- [x] add simple cvsite static web service
+- [x] protect ingress with TLS
+- [ ] migrate wekan
+- [ ] migrate domain name control under wekan
+
+some future ideas:
+- multi-node setup? costs will probably get higher, not sure if it'll be still worth it
+- git repo? ci / cd?
+
 ## terraform
 
   export TF_VAR_do_token=`pass show digitalocean_dns_token`
