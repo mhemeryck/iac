@@ -1,8 +1,15 @@
-kind: Ingress
 apiVersion: extensions/v1beta1
+kind: Ingress
 metadata:
   name: traefik-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/issuer: letsencrypt
 spec:
+  tls:
+    - hosts:
+        - cv.mhemeryck.com
+      secretName: cv-mhemeryck-com-tls
   rules:
     - host: cv.mhemeryck.com
       http:
