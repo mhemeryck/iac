@@ -50,3 +50,15 @@ Add the cluster issuers
 Add the ingress, referencing the cluster TLS issuer:
 
   kubectl apply -f ingress.yaml
+
+## wekan
+
+From https://github.com/cloudflavor/wekan-k8s
+
+helm install mongodb:
+
+  helm install --name mongodb stable/mongodb --namespace wekan-project --set mongodbRootPassword="pass",mongodbUsername="wekan",mongodbPassword="pass",mongodbDatabase="wekan"
+
+apply wekan
+
+  kubectl apply -f wekan.yaml

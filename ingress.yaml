@@ -5,11 +5,15 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/issuer: letsencrypt
+    ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
     - hosts:
         - cv.mhemeryck.com
       secretName: cv-mhemeryck-com-tls
+    - hosts:
+        - kanban.mhemeryck.com
+      secretName: kanban-mhemeryck-com-tls
   rules:
     - host: cv.mhemeryck.com
       http:
@@ -18,3 +22,10 @@ spec:
             backend:
               serviceName: cvsite-service
               servicePort: 80
+    - host: kanban.mhemeryck.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: wekan
+              servicePort: 8080
