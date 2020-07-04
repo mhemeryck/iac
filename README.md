@@ -53,12 +53,16 @@ Add the ingress, referencing the cluster TLS issuer:
 
 ## wekan
 
-From https://github.com/cloudflavor/wekan-k8s
+Setup mongodb
 
-helm install mongodb:
+  kubectl apply -f mongo.yaml
 
-  helm install --name mongodb stable/mongodb --namespace wekan-project --set mongodbRootPassword="pass",mongodbUsername="wekan",mongodbPassword="pass",mongodbDatabase="wekan"
+In case of restoring an older <dump> folder:
 
-apply wekan
+  kubectl cp dump/ default/mongodb-app-5cd84bf6df-ng5pv:/tmp/
+  kubectl exec -it mongodb-app-7b46f9c87-pdbg5 -- bash
+  mongorestore /tmp/dump/
+
+Set up wekan
 
   kubectl apply -f wekan.yaml

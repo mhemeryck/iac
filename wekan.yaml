@@ -1,28 +1,9 @@
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: wekan
-  labels:
-    app: wekan
-spec:
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-  selector:
-    app: wekan
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wekan
-  labels:
-    app: wekan
+  name: wekan-app
 spec:
-  replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: wekan
@@ -32,15 +13,23 @@ spec:
         app: wekan
     spec:
       containers:
-        - image: quay.io/wekan/wekan:v1.78
-          name: wekan
-          ports:
-            - containerPort: 8080
-              name: wekan
+        - name: wekan
+          image: wekanteam/wekan:v4.17
           env:
             - name: MONGO_URL
-              value: mongodb://wekan:pass@mongodb:27017/wekan
-            - name: PORT
-              value: "8080"
+              value: mongodb://mongodb-service:27017/wekan
             - name: ROOT_URL
               value: https://kanban.mhemeryck.com
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wekan-service
+spec:
+  selector:
+    app: wekan
+  ports:
+    - port: 80
+      targetPort: 8080
