@@ -2,7 +2,7 @@
 
 terraform setup for personal projects
 
-todo:
+Steps:
 - [x] terraform infra setup: single node
 - [x] provision k3s
 - [x] add simple cvsite static web service
@@ -16,7 +16,7 @@ some future ideas:
 
 ## terraform
 
-  export TF_VAR_do_token=`pass show digitalocean_dns_token`
+  export TF_VAR_do_token=`pass show <mytoken>`
   terraform apply
 
 ## provision k3s
