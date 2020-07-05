@@ -23,6 +23,10 @@ some future ideas:
 
   k3sup install --ip $(terraform output ip) --user root --ssh-key=kube_key --local-path=./kubeconfig
 
+  get the kubeconfig file afterwards
+
+  k3sup install --ip $(terraform output ip) --user root --ssh-key=kube_key --local-path=./kubeconfig --skip-install
+
 ## cvsite
 
 Set up kubectl
