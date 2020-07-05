@@ -75,3 +75,55 @@ resource "digitalocean_firewall" "web" {
 		destination_addresses = ["0.0.0.0/0", "::/0"]
 	}
 }
+
+resource "digitalocean_domain" "mhemeryck" {
+	name = "mhemeryck.com"
+}
+
+#resource "digitalocean_record" "landing" {
+#	domain = digitalocean_domain.mhemeryck.name
+#	name = "@"
+#	type = "A"
+#	value = digitalocean_droplet.kube.ipv4_address
+#	ttl = 3600
+#}
+#
+resource "digitalocean_record" "ns1" {
+	domain = digitalocean_domain.mhemeryck.name
+	name = "@"
+	type = "NS"
+	value = "ns1.digitalocean.com."
+	ttl = 1800
+}
+
+resource "digitalocean_record" "ns2" {
+	domain = digitalocean_domain.mhemeryck.name
+	name = "@"
+	type = "NS"
+	value = "ns2.digitalocean.com."
+	ttl = 1800
+}
+
+resource "digitalocean_record" "ns3" {
+	domain = digitalocean_domain.mhemeryck.name
+	name = "@"
+	type = "NS"
+	value = "ns3.digitalocean.com."
+	ttl = 1800
+}
+
+resource "digitalocean_record" "cv" {
+	domain = digitalocean_domain.mhemeryck.name
+	name = "cv"
+	type = "A"
+	value = digitalocean_droplet.kube.ipv4_address
+	ttl = 3600
+}
+
+resource "digitalocean_record" "kanban" {
+	domain = digitalocean_domain.mhemeryck.name
+	name = "kanban"
+	type = "A"
+	value = digitalocean_droplet.kube.ipv4_address
+	ttl = 3600
+}
