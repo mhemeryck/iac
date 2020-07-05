@@ -1,18 +1,24 @@
 # Infrastructure as code
 
-terraform setup for personal projects
+This is a first project where I wanted to apply some newly learned concepts in the real world, specifically:
+- [terraform] for provisioning the infrastructure
+- [k3sup] for bootstrapping a minimal one-node [k3s]-based kubernetes cluster
+- [traefik] -- built into k3s as an ingress controller and TLS termination
+- [cert-manager] for automatically supporting TLS for the different endpoints
 
-Steps:
-- [x] terraform infra setup: single node
-- [x] provision k3s
-- [x] add simple cvsite static web service
-- [x] protect ingress with TLS
-- [x] migrate wekan
-- [x] migrate domain name control under wekan
+The projects I did deploy were
+- [cvsite] a static nginx container, containing my resume
+- [wekan] an open-source alternative to [trello], which I use for my own planning
 
-some future ideas:
-- multi-node setup? costs will probably get higher, not sure if it'll be still worth it
-- git repo? ci / cd?
+
+[terraform]: https://terraform.io
+[k3sup]: https://k3sup.dev
+[k3s]: https://k3s.io
+[traefik]: https://containo.us/traefik/
+[cert-manager]: https://cert-manager.io/docs/installation/kubernetes/
+[cvsite]: https://github.com/mhemeryck/cvsite
+[wekan]: https://wekan.github.io/
+[trello]: https://trello.com/
 
 ## terraform
 
