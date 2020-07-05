@@ -7,8 +7,8 @@ todo:
 - [x] provision k3s
 - [x] add simple cvsite static web service
 - [x] protect ingress with TLS
-- [ ] migrate wekan
-- [ ] migrate domain name control under wekan
+- [x] migrate wekan
+- [x] migrate domain name control under wekan
 
 some future ideas:
 - multi-node setup? costs will probably get higher, not sure if it'll be still worth it

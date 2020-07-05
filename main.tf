@@ -80,14 +80,14 @@ resource "digitalocean_domain" "mhemeryck" {
 	name = "mhemeryck.com"
 }
 
-#resource "digitalocean_record" "landing" {
-#	domain = digitalocean_domain.mhemeryck.name
-#	name = "@"
-#	type = "A"
-#	value = digitalocean_droplet.kube.ipv4_address
-#	ttl = 3600
-#}
-#
+resource "digitalocean_record" "landing" {
+	domain = digitalocean_domain.mhemeryck.name
+	name = "@"
+	type = "A"
+	value = digitalocean_droplet.kube.ipv4_address
+	ttl = 3600
+}
+
 resource "digitalocean_record" "ns1" {
 	domain = digitalocean_domain.mhemeryck.name
 	name = "@"
@@ -120,9 +120,9 @@ resource "digitalocean_record" "cv" {
 	ttl = 3600
 }
 
-resource "digitalocean_record" "kanban" {
+resource "digitalocean_record" "wekan" {
 	domain = digitalocean_domain.mhemeryck.name
-	name = "kanban"
+	name = "wekan"
 	type = "A"
 	value = digitalocean_droplet.kube.ipv4_address
 	ttl = 3600

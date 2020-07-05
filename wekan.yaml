@@ -19,7 +19,7 @@ spec:
             - name: MONGO_URL
               value: mongodb://mongodb/wekan
             - name: ROOT_URL
-              value: https://kanban.mhemeryck.com
+              value: https://wekan.mhemeryck.com
           ports:
             - containerPort: 8080
 ---

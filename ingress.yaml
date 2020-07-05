@@ -13,22 +13,20 @@ spec:
         - mhemeryck.com
       secretName: cv-mhemeryck-com-tls
     - hosts:
-        - kanban.mhemeryck.com
-      secretName: kanban-mhemeryck-com-tls
+        - wekan.mhemeryck.com
+      secretName: wekan-mhemeryck-com-tls
   rules:
     - host: cv.mhemeryck.com
       http: &cv_http
         paths:
-          - path: /
-            backend:
+          - backend:
               serviceName: cvsite
               servicePort: 80
     - host: mhemeryck.com
       http: *cv_http
-    - host: kanban.mhemeryck.com
+    - host: wekan.mhemeryck.com
       http:
         paths:
-          - path: /
-            backend:
+          - backend:
               serviceName: wekan
               servicePort: 80
