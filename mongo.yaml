@@ -8,12 +8,12 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 250Mi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongodb-app
+  name: mongodb
 spec:
   selector:
     matchLabels:
@@ -37,7 +37,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb-service
+  name: mongodb
 spec:
   selector:
     app: mongodb

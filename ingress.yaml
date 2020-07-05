@@ -20,12 +20,12 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: cvsite-service
+              serviceName: cvsite
               servicePort: 80
     - host: kanban.mhemeryck.com
       http:
         paths:
           - path: /
             backend:
-              serviceName: wekan-service
-              servicePort: 8080
+              serviceName: wekan
+              servicePort: 80

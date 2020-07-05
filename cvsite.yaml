@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cvsite-app
+  name: cvsite
 spec:
   selector:
     matchLabels:
@@ -19,9 +19,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: cvsite-service
-  labels:
-    app: cvsite
+  name: cvsite
 spec:
   selector:
     app: cvsite
