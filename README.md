@@ -26,6 +26,7 @@ The projects I did deploy were
 Apply terraform setup; I do get the token from [pass]
 
     export TF_VAR_do_token=`pass show <mytoken>`
+    export TF_VAR_hcloud_token=`pass show <mytoken>`
     terraform apply
 
 [pass]: https://www.passwordstore.org/
@@ -44,6 +45,11 @@ Set up kubectl; the kubeconfig file should just be in the folder ready
 
     export KUBECONFIG=`pwd`/kubeconfig
 
+Merge the kubeconfig file afterwards:
+
+    export KUBECONFIG~=/.kube/config:`pwd`/kubeconfig
+    kubectl config view --flatten > out
+
 ## cvsite
 
 Add the deployment and service
@@ -54,7 +60,7 @@ Add the deployment and service
 
 Add the cert-manager resources
 
-    kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.15.1/cert-manager.yaml
+    kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.yaml
 
 Add the cluster issuers
 
