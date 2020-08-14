@@ -158,3 +158,19 @@ resource "digitalocean_record" "wekan" {
 	value = hcloud_server.master.ipv4_address
 	ttl = 3600
 }
+
+resource "digitalocean_record" "grafana" {
+	domain = digitalocean_domain.mhemeryck.name
+	name = "grafana"
+	type = "A"
+	value = hcloud_server.master.ipv4_address
+	ttl = 3600
+}
+
+resource "digitalocean_record" "prometheus" {
+	domain = digitalocean_domain.mhemeryck.name
+	name = "prometheus"
+	type = "A"
+	value = hcloud_server.master.ipv4_address
+	ttl = 3600
+}
