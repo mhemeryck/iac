@@ -11,13 +11,15 @@ spec:
       storage: 1Gi
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongodb
 spec:
   selector:
     matchLabels:
       app: mongodb
+  serviceName: mongodb
+  replicas: 1
   template:
     metadata:
       labels:
