@@ -6,7 +6,7 @@ terraform {
     }
     hcloud = {
       source = "hetznercloud/hcloud"
-      version = ">= 1.24.1"
+      version = ">= 1.26.0"
     }
   }
   required_version = ">= 0.13"
@@ -39,6 +39,42 @@ resource "hcloud_server" "master" {
       private_key = file("./kube_key")
     }
   }
+  firewall_ids = [hcloud_firewall.firewall.id]
+}
+
+resource "hcloud_firewall" "firewall" {
+  name = "firewall"
+
+  rule {
+    direction = "in"
+    protocol = "tcp"
+    port = "80"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
+  rule {
+    direction = "in"
+    protocol = "tcp"
+    port = "443"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
+  rule {
+    direction = "in"
+    protocol = "tcp"
+    port = "6443"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
 }
 
 resource "hcloud_ssh_key" "kube_key" {
@@ -93,14 +129,6 @@ resource "digitalocean_record" "cv" {
 resource "digitalocean_record" "wekan" {
   domain = digitalocean_domain.mhemeryck.name
   name   = "wekan"
-  type   = "A"
-  value  = hcloud_server.master.ipv4_address
-  ttl    = 3600
-}
-
-resource "digitalocean_record" "grafana" {
-  domain = digitalocean_domain.mhemeryck.name
-  name   = "grafana"
   type   = "A"
   value  = hcloud_server.master.ipv4_address
   ttl    = 3600
