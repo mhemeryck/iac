@@ -133,3 +133,10 @@ resource "digitalocean_record" "wekan" {
   value  = hcloud_server.master.ipv4_address
   ttl    = 3600
 }
+
+resource "digitalocean_record" "blog" {
+  domain = digitalocean_domain.mhemeryck.name
+  name   = "blog"
+  type   = "CNAME"
+  value  = "mhemeryck.github.io."
+}
