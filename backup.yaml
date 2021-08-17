@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup
+spec:
+  schedule: "0 0 */3 * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: mongodb-storage
+              persistentVolumeClaim:
+                claimName: mongodb-storage
+            - name: backup
+              persistentVolumeClaim:
+                claimName: backup
+          containers:
+            - name: backup
+              image: mongo:4.4.8
+              resources:
+                limits:
+                  memory: 128Mi
+              volumeMounts:
+                - name: mongodb-storage
+                  mountPath: /data/db
+                - name: backup
+                  mountPath: /backup
+              command: ["/bin/sh"]
+              args:
+                - -c
+                - |
+                  cd /tmp
+                  mongodump -v -h mongodb -o dump
+                  tar cfj /backup/mongodump-$(date +%Y%m%d-%H%M%S).tar.bz2 dump/
+                  rm -rf dump/
+                  find /backup/ -type f -mtime +10 -name "*.tar.bz2"
