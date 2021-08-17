@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: traefik-ingress
@@ -15,27 +15,24 @@ spec:
     - hosts:
         - wekan.mhemeryck.com
       secretName: wekan-mhemeryck-com-tls
-    - hosts:
-        - grafana.mhemeryck.com
-      secretName: grafana-mhemeryck-com-tls
   rules:
     - host: cv.mhemeryck.com
       http: &cv_http
         paths:
-          - backend:
-              serviceName: cvsite
-              servicePort: 80
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: cvsite
+                port:
+                  number: 80
     - host: mhemeryck.com
       http: *cv_http
     - host: wekan.mhemeryck.com
       http:
         paths:
-          - backend:
-              serviceName: wekan
-              servicePort: 80
-    - host: grafana.mhemeryck.com
-      http:
-        paths:
-          - backend:
-              serviceName: prometheus-grafana
-              servicePort: 80
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: wekan
+                port:
+                  number: 80
