@@ -33,7 +33,7 @@ spec:
               image: mongo:4.4.8
               resources:
                 limits:
-                  memory: 128Mi
+                  memory: 256Mi
               volumeMounts:
                 - name: mongodb-storage
                   mountPath: /data/db
