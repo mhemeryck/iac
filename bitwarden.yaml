@@ -7,6 +7,11 @@ spec:
   selector:
     matchLabels:
       app: bitwarden
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
@@ -33,6 +38,10 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: database_url
+            - name: SIGNUPS_ALLOWED
+              value: "false"
+            - name: INVITATIONS_ALLOWED
+              value: "false"
           ports:
             - containerPort: 80
 ---
