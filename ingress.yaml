@@ -15,6 +15,9 @@ spec:
     - hosts:
         - wekan.mhemeryck.com
       secretName: wekan-mhemeryck-com-tls
+    - hosts:
+        - bitwarden.mhemeryck.com
+      secretName: bitwarden-mhemeryck-com-tls
   rules:
     - host: cv.mhemeryck.com
       http: &cv_http
@@ -34,5 +37,14 @@ spec:
             backend:
               service:
                 name: wekan
+                port:
+                  number: 80
+    - host: bitwarden.mhemeryck.com
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: bitwarden
                 port:
                   number: 80
