@@ -4,3 +4,4 @@ kube_key
 kube_key.pub
 terraform.tfstate
 *.backup
+secrets.yaml

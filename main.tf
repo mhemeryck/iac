@@ -140,3 +140,11 @@ resource "digitalocean_record" "blog" {
   type   = "CNAME"
   value  = "mhemeryck.github.io."
 }
+
+resource "digitalocean_record" "bitwarden" {
+  domain = digitalocean_domain.mhemeryck.name
+  name   = "bitwarden"
+  type   = "A"
+  value  = hcloud_server.master.ipv4_address
+  ttl    = 3600
+}
