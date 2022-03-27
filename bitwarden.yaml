@@ -33,6 +33,16 @@ spec:
                 secretKeyRef:
                   name: vault-secrets
                   key: admin_token
+            - name: YUBICO_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: yubico_client_id
+            - name: YUBICO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: yubico_secret_key
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
