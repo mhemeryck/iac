@@ -11,6 +11,7 @@ The projects I did deploy were
 
 - [cvsite] a static nginx container, containing my resume
 - [wekan] an open-source alternative to [trello], which I use for my own planning
+- [vaultwarden] open-source version of [bitwarden] to host own password manager
 
 [terraform]: https://terraform.io
 [k3sup]: https://k3sup.dev
@@ -20,6 +21,8 @@ The projects I did deploy were
 [cvsite]: https://github.com/mhemeryck/cvsite
 [wekan]: https://wekan.github.io/
 [trello]: https://trello.com/
+[bitwarden]: https://bitwarden.com/
+[vaultwarden]: https://github.com/dani-garcia/vaultwarden
 
 ## terraform
 
@@ -89,3 +92,48 @@ In case of restoring an older <dump> folder:
 Set up wekan
 
     kubectl apply -f wekan.yaml
+
+## bitwarden
+
+Provision some secrets (not in repo)
+
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault-secrets
+type: Opaque
+stringData:
+  admin_token: "..."
+  yubico_client_id: "..."
+  yubico_secret_key: "..."
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres
+type: Opaque
+stringData:
+  password: "..."
+  database_url: "postgresql://<username>:<password>@<host>:<port>"
+```
+
+    kubectl apply -f secrets.yaml
+
+Setup a postgres db
+
+    kubectl apply -f postgres.yaml
+
+Setup bitwarden deployment
+
+    kubectl apply -f bitwarden.yaml
+
+Update ingress
+
+    kubectl apply -f ingress.yaml
+
+Update the DNS entries with terraform
+
+    terraform apply
