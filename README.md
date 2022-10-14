@@ -63,7 +63,7 @@ Add the deployment and service
 
 Add the cert-manager resources
 
-    kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.yaml
+    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
 
 Add the cluster issuers
 
