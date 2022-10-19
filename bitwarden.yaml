@@ -23,7 +23,7 @@ spec:
             claimName: vault
       containers:
         - name: bitwarden
-          image: vaultwarden/server:1.24.0-alpine
+          image: vaultwarden/server:1.26.0-alpine
           volumeMounts:
             - name: vault
               mountPath: /data
