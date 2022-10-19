@@ -63,7 +63,7 @@ Add the deployment and service
 
 Add the cert-manager resources
 
-    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.yaml
+    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.0/cert-manager.yaml
 
 Add the cluster issuers
 
@@ -137,3 +137,13 @@ Update ingress
 Update the DNS entries with terraform
 
     terraform apply
+
+Create a backup of the postgres database
+
+    kubectl exec -it postgres-0 -- bash
+    pg_dump -U postgres <out.sql>
+
+Restore backup of the postgres database
+
+    kubectl exec -it postgres-0 -- bash
+    psql -U postgres -f <out.sql>
