@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: wekan
-          image: wekanteam/wekan:v6.18
+          image: wekanteam/wekan:v6.53
           env:
             - name: MONGO_URL
               value: mongodb://mongodb/wekan

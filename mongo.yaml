@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: mongo
-          image: mongo:4.2.8-bionic
+          image: mongo:4.2.23-bionic
           volumeMounts:
             - name: mongodb-storage
               mountPath: /data/db
