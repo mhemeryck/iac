@@ -18,6 +18,9 @@ spec:
     - hosts:
         - bitwarden.mhemeryck.com
       secretName: bitwarden-mhemeryck-com-tls
+    - hosts:
+        - mastodon.mhemeryck.com
+      secretName: mastodon-mhemeryck-com-tls
   rules:
     - host: cv.mhemeryck.com
       http: &cv_http
@@ -46,5 +49,14 @@ spec:
             backend:
               service:
                 name: bitwarden
+                port:
+                  number: 80
+    - host: mastodon.mhemeryck.com
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: mastodon-web
                 port:
                   number: 80
