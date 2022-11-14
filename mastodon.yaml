@@ -1,0 +1,195 @@
+# postgres
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mastodon-pgdata
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mastodon-postgres
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-postgres
+  serviceName: mastodon-postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mastodon-postgres
+    spec:
+      volumes:
+        - name: mastodon-pgdata
+          persistentVolumeClaim:
+            claimName: mastodon-pgdata
+      containers:
+        - name: mastodon-postgres
+          image: postgres:15.1-alpine3.16
+          resources:
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: mastodon-pgdata
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_DB
+              value: mastodon
+            - name: POSTGRES_USER
+              value: mastodon
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: postgres_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mastodon-postgres
+spec:
+  selector:
+    app: mastodon-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+# mongo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mastodon-mongodb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mastodon-mongodb
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-mongodb
+  serviceName: mastodon-mongodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mastodon-mongodb
+    spec:
+      containers:
+        - name: mastodon-mongodb
+          image: mongo:4.2.23-bionic
+          volumeMounts:
+            - name: mastodon-mongodb
+              mountPath: /data/db
+      volumes:
+        - name: mastodon-mongodb
+          persistentVolumeClaim:
+            claimName: mastodon-mongodb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mastodon-mongodb
+spec:
+  selector:
+    app: mastodon-mongodb
+  ports:
+    - port: 27017
+
+# web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-web
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-web
+  template:
+    metadata:
+      labels:
+        app: mastodon-web
+    spec:
+      containers:
+        - name: mastodon-web
+          image: tootsuite/mastodon:v3.5.4
+          ports:
+            - containerPort: 3000
+          command: ["/bin/sh"]
+          env:
+            - name: LOCAL_DOMAIN
+              value: localhost
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: DB_HOST
+              value: mastodon-postgres
+            - name: DB_USER
+              value: mastodon
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: postgres_password
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: mastodon
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: web_secret_key_base
+            - name: OTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: web_otp_secret
+            - name: VAPID_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: web_vapid_private_key
+            - name: VAPID_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: web_vapid_public_key
+            - name: IP_RETENTION_PERIOD
+              value: "31556952"
+            - name: SESSION_RETENTION_PERIOD
+              value: "31556952"
+          args:
+            - -c
+            - |
+              rm -f /mastodon/tmp/pids/server.pid
+              bundle exec rails s -p 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mastodon-web
+spec:
+  selector:
+    app: mastodon-web
+  ports:
+    - port: 80
+      targetPort: 3000

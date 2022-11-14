@@ -22,7 +22,7 @@ provider "hcloud" {
 
 resource "hcloud_server" "master" {
   name        = "master"
-  image       = "centos-8"
+  image       = "fedora-36"
   server_type = "cx21"
   ssh_keys    = [hcloud_ssh_key.kube_key.id]
 
@@ -144,6 +144,14 @@ resource "digitalocean_record" "blog" {
 resource "digitalocean_record" "bitwarden" {
   domain = digitalocean_domain.mhemeryck.name
   name   = "bitwarden"
+  type   = "A"
+  value  = hcloud_server.master.ipv4_address
+  ttl    = 3600
+}
+
+resource "digitalocean_record" "mastodon" {
+  domain = digitalocean_domain.mhemeryck.name
+  name   = "mastodon"
   type   = "A"
   value  = hcloud_server.master.ipv4_address
   ttl    = 3600
