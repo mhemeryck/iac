@@ -158,6 +158,20 @@ spec:
               value: "31556952"
             - name: SESSION_RETENTION_PERIOD
               value: "31556952"
+            - name: SMTP_SERVER
+              value: smtp.sendgrid.net
+            - name: SMTP_PORT
+              value: "587"
+            - name: SMTP_LOGIN
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: sendgrid_smtp_login
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: sendgrid_smtp_password
           command: ["/bin/sh"]
           args:
             - -c
