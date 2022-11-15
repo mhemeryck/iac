@@ -156,3 +156,24 @@ resource "digitalocean_record" "mastodon" {
   value  = hcloud_server.master.ipv4_address
   ttl    = 3600
 }
+
+resource "digitalocean_record" "sendgrid_1" {
+  domain = digitalocean_domain.mhemeryck.name
+  name   = "em4771"
+  type   = "CNAME"
+  value  = "u30101993.wl244.sendgrid.net."
+}
+
+resource "digitalocean_record" "sendgrid_2" {
+  domain = digitalocean_domain.mhemeryck.name
+  name   = "s1._domainkey"
+  type   = "CNAME"
+  value  = "s1.domainkey.u30101993.wl244.sendgrid.net."
+}
+
+resource "digitalocean_record" "sendgrid_3" {
+  domain = digitalocean_domain.mhemeryck.name
+  name   = "s2._domainkey"
+  type   = "CNAME"
+  value  = "s2.domainkey.u30101993.wl244.sendgrid.net."
+}
