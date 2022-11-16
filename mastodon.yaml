@@ -155,3 +155,43 @@ spec:
   ports:
     - port: 80
       targetPort: 3000
+
+# streaming
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-streaming
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-streaming
+  template:
+    metadata:
+      labels:
+        app: mastodon-streaming
+    spec:
+      containers:
+        - name: mastodon-streaming
+          image: tootsuite/mastodon:v3.5.4
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - configMapRef:
+                name: mastodon
+            - secretRef:
+                name: mastodon
+          command: ["node"]
+          args:
+            - ./streaming
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mastodon-streaming
+spec:
+  selector:
+    app: mastodon-streaming
+  ports:
+    - port: 80
+      targetPort: 4000
