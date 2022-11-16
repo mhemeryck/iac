@@ -144,6 +144,11 @@ spec:
             - |
               rm -f /mastodon/tmp/pids/server.pid
               bundle exec rails s -p 3000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
 ---
 apiVersion: v1
 kind: Service
@@ -184,6 +189,11 @@ spec:
           command: ["node"]
           args:
             - ./streaming
+          livenessProbe:
+            httpGet:
+              path: /api/v1/streaming/health
+              port: 4000
+            initialDelaySeconds: 10
 ---
 apiVersion: v1
 kind: Service
