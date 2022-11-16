@@ -112,6 +112,7 @@ data:
   SESSION_RETENTION_PERIOD: "31556952"
   SMTP_SERVER: smtp.sendgrid.net
   SMTP_PORT: "587"
+  SMTP_FROM_ADDRESS: mastodon@mhemeryck.com
 
 # web
 ---
