@@ -205,3 +205,32 @@ spec:
   ports:
     - port: 80
       targetPort: 4000
+
+# sidekiq
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-sidekiq
+spec:
+  selector:
+    matchLabels:
+      app: mastodon-sidekiq
+  template:
+    metadata:
+      labels:
+        app: mastodon-sidekiq
+    spec:
+      containers:
+        - name: mastodon-sidekiq
+          image: tootsuite/mastodon:v3.5.4
+          envFrom:
+            - configMapRef:
+                name: mastodon
+            - secretRef:
+                name: mastodon
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - |
+              bundle exec sidekiq
