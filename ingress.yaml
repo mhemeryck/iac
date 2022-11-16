@@ -60,3 +60,10 @@ spec:
                 name: mastodon-web
                 port:
                   number: 80
+          - path: /api/v1/streaming
+            pathType: Prefix
+            backend:
+              service:
+                name: mastodon-streaming
+                port:
+                  number: 80
