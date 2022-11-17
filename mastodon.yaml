@@ -114,6 +114,17 @@ data:
   SMTP_PORT: "587"
   SMTP_FROM_ADDRESS: mastodon@mhemeryck.com
 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mastodon-public-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 # web
 ---
 apiVersion: apps/v1
@@ -129,11 +140,18 @@ spec:
       labels:
         app: mastodon-web
     spec:
+      volumes:
+        - name: mastodon-public-system
+          persistentVolumeClaim:
+            claimName: mastodon-public-system
       containers:
         - name: mastodon-web
           image: tootsuite/mastodon:v3.5.4
           ports:
             - containerPort: 3000
+          volumeMounts:
+            - name: mastodon-public-system
+              mountPath: /mastodon/public/system
           envFrom:
             - configMapRef:
                 name: mastodon
@@ -222,9 +240,16 @@ spec:
       labels:
         app: mastodon-sidekiq
     spec:
+      volumes:
+        - name: mastodon-public-system
+          persistentVolumeClaim:
+            claimName: mastodon-public-system
       containers:
         - name: mastodon-sidekiq
           image: tootsuite/mastodon:v3.5.4
+          volumeMounts:
+            - name: mastodon-public-system
+              mountPath: /mastodon/public/system
           envFrom:
             - configMapRef:
                 name: mastodon
