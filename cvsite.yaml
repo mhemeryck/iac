@@ -1,7 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cvsite
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cvsite
+  namespace: cvsite
 spec:
   selector:
     matchLabels:
@@ -20,6 +26,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cvsite
+  namespace: cvsite
   labels:
     app: cvsite
 spec:
@@ -28,3 +35,31 @@ spec:
   ports:
     - name: web
       port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web
+  namespace: cvsite
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - cv.mhemeryck.com
+        - mhemeryck.com
+      secretName: cv-mhemeryck-com-tls
+  rules:
+    - host: cv.mhemeryck.com
+      http: &cv_http
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: cvsite
+                port:
+                  number: 80
+    - host: mhemeryck.com
+      http: *cv_http

@@ -9,10 +9,6 @@ metadata:
 spec:
   tls:
     - hosts:
-        - cv.mhemeryck.com
-        - mhemeryck.com
-      secretName: cv-mhemeryck-com-tls
-    - hosts:
         - wekan.mhemeryck.com
       secretName: wekan-mhemeryck-com-tls
     - hosts:
@@ -22,17 +18,6 @@ spec:
         - mastodon.mhemeryck.com
       secretName: mastodon-mhemeryck-com-tls
   rules:
-    - host: cv.mhemeryck.com
-      http: &cv_http
-        paths:
-          - pathType: ImplementationSpecific
-            backend:
-              service:
-                name: cvsite
-                port:
-                  number: 80
-    - host: mhemeryck.com
-      http: *cv_http
     - host: wekan.mhemeryck.com
       http:
         paths:
