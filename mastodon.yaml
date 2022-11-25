@@ -260,3 +260,38 @@ spec:
             - -c
             - |
               bundle exec sidekiq
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mastodon-cleanup
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: mastodon-public-system
+              persistentVolumeClaim:
+                claimName: mastodon-public-system
+          containers:
+            - name: mastodon-cleanup
+              image: tootsuite/mastodon:v3.5.4
+              volumeMounts:
+                - name: mastodon-public-system
+                  mountPath: /mastodon/public/system
+              envFrom:
+                - configMapRef:
+                    name: mastodon
+                - secretRef:
+                    name: mastodon
+              command: ["/bin/sh"]
+              args:
+                - -c
+                - |
+                  tootctl media remove --days=7
+                  tootctl preview-cards remove --days=7
+                  tootctl statuses remove --days=3
+                  tootctl media remove-orphans
