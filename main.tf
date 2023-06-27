@@ -177,3 +177,11 @@ resource "digitalocean_record" "sendgrid_3" {
   type   = "CNAME"
   value  = "s2.domainkey.u30101993.wl244.sendgrid.net."
 }
+
+resource "digitalocean_record" "akaunting" {
+  domain = digitalocean_domain.mhemeryck.name
+  name   = "akaunting"
+  type   = "A"
+  value  = hcloud_server.master.ipv4_address
+  ttl    = 3600
+}
