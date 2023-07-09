@@ -146,7 +146,7 @@ spec:
             claimName: mastodon-public-system
       containers:
         - name: mastodon-web
-          image: tootsuite/mastodon:v3.5.8
+          image: tootsuite/mastodon:v3.5.10
           ports:
             - containerPort: 3000
           volumeMounts:
@@ -197,7 +197,7 @@ spec:
     spec:
       containers:
         - name: mastodon-streaming
-          image: tootsuite/mastodon:v3.5.8
+          image: tootsuite/mastodon:v3.5.10
           ports:
             - containerPort: 4000
           envFrom:
@@ -246,7 +246,7 @@ spec:
             claimName: mastodon-public-system
       containers:
         - name: mastodon-sidekiq
-          image: tootsuite/mastodon:v3.5.8
+          image: tootsuite/mastodon:v3.5.10
           volumeMounts:
             - name: mastodon-public-system
               mountPath: /mastodon/public/system
@@ -278,7 +278,7 @@ spec:
                 claimName: mastodon-public-system
           containers:
             - name: mastodon-cleanup
-              image: tootsuite/mastodon:v3.5.8
+              image: tootsuite/mastodon:v3.5.10
               volumeMounts:
                 - name: mastodon-public-system
                   mountPath: /mastodon/public/system
