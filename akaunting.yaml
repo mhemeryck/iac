@@ -151,6 +151,30 @@ spec:
         - name: uploads
           persistentVolumeClaim:
             claimName: uploads
+      initContainers:
+        - name: akaunting-migrations
+          image: docker.io/akaunting/akaunting:3.0.16-v
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              php artisan update:all
+          volumeMounts:
+            - name: uploads
+              mountPath: /var/www/html
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: akaunting
+                  key: mysql_password
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: akaunting
+                  key: admin_password
+          envFrom:
+            - configMapRef:
+                name: akaunting
       containers:
         - name: akaunting
           image: docker.io/akaunting/akaunting:3.0.16-v
