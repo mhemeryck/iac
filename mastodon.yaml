@@ -50,7 +50,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: mastodon
-                  key: postgres_password
+                  key: DB_PASS
 ---
 apiVersion: v1
 kind: Service
