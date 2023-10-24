@@ -50,7 +50,7 @@ Set up kubectl; the kubeconfig file should just be in the folder ready
 
 Merge the kubeconfig file afterwards:
 
-    export KUBECONFIG~=/.kube/config:`pwd`/kubeconfig
+    export KUBECONFIG=~/.kube/config:`pwd`/kubeconfig
     kubectl config view --flatten > out
 
 ## cvsite
