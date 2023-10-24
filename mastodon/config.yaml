@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mastodon
+  namespace: mastodon
+data:
+  LOCAL_DOMAIN: mastodon.mhemeryck.com
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  DB_HOST: postgres
+  DB_USER: mastodon
+  DB_PORT: "5432"
+  DB_NAME: mastodon
+  IP_RETENTION_PERIOD: "31556952"
+  SESSION_RETENTION_PERIOD: "31556952"
+  SMTP_SERVER: smtp.sendgrid.net
+  SMTP_PORT: "587"
+  SMTP_FROM_ADDRESS: mastodon@mhemeryck.com

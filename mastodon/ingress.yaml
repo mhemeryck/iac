@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web
+  namespace: mastodon
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    # cert-manager.io/cluster-issuer: letsencrypt
+    # ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+    - host: mastodon.mhemeryck.com
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
+          - path: /api/v1/streaming
+            pathType: Prefix
+            backend:
+              service:
+                name: streaming
+                port:
+                  number: 80

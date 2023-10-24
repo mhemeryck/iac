@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: mastodon
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: pgdata
+      containers:
+        - name: postgres
+          image: postgres:16.0-alpine3.18
+          resources:
+            limits:
+              memory: 1Gi
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_DB
+              value: mastodon
+            - name: POSTGRES_USER
+              value: mastodon
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mastodon
+                  key: DB_PASS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: mastodon
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

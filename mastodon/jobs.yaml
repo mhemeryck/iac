@@ -1,0 +1,37 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup
+  namespace: mastodon
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: public-system
+              persistentVolumeClaim:
+                claimName: public-system
+          containers:
+            - name: cleanup
+              image: tootsuite/mastodon:v4.2.1
+              volumeMounts:
+                - name: public-system
+                  mountPath: /mastodon/public/system
+              envFrom:
+                - configMapRef:
+                    name: mastodon
+                - secretRef:
+                    name: mastodon
+              command: ["/bin/sh"]
+              args:
+                - -c
+                - |
+                  tootctl media remove --days=7
+                  tootctl preview-cards remove --days=7
+                  tootctl statuses remove --days=3
+                  tootctl media remove-orphans
+                  tootctl cache clean
