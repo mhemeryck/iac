@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sidekiq
+  namespace: mastodon
+spec:
+  selector:
+    matchLabels:
+      app: sidekiq
+  template:
+    metadata:
+      labels:
+        app: sidekiq
+    spec:
+      volumes:
+        - name: public-system
+          persistentVolumeClaim:
+            claimName: public-system
+      containers:
+        - name: sidekiq
+          image: tootsuite/mastodon:v4.2.1
+          volumeMounts:
+            - name: public-system
+              mountPath: /mastodon/public/system
+          envFrom:
+            - configMapRef:
+                name: mastodon
+            - secretRef:
+                name: mastodon
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - |
+              bundle exec sidekiq

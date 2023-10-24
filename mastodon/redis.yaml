@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: mastodon
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  serviceName: redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: mastodon
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
