@@ -1,11 +1,11 @@
 terraform {
   required_providers {
     digitalocean = {
-      source = "digitalocean/digitalocean"
+      source  = "digitalocean/digitalocean"
       version = ">= 2.5.1"
     }
     hcloud = {
-      source = "hetznercloud/hcloud"
+      source  = "hetznercloud/hcloud"
       version = ">= 1.26.0"
     }
   }
@@ -47,8 +47,8 @@ resource "hcloud_firewall" "firewall" {
 
   rule {
     direction = "in"
-    protocol = "tcp"
-    port = "80"
+    protocol  = "tcp"
+    port      = "80"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
@@ -57,8 +57,8 @@ resource "hcloud_firewall" "firewall" {
 
   rule {
     direction = "in"
-    protocol = "tcp"
-    port = "443"
+    protocol  = "tcp"
+    port      = "443"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
@@ -67,8 +67,8 @@ resource "hcloud_firewall" "firewall" {
 
   rule {
     direction = "in"
-    protocol = "tcp"
-    port = "6443"
+    protocol  = "tcp"
+    port      = "6443"
     source_ips = [
       "0.0.0.0/0",
       "::/0"

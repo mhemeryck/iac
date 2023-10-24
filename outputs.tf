@@ -1,3 +1,3 @@
 output "master_ip" {
-	value = hcloud_server.master.ipv4_address
+  value = hcloud_server.master.ipv4_address
 }
