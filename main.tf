@@ -42,6 +42,15 @@ resource "hcloud_server" "master" {
   firewall_ids = [hcloud_firewall.firewall.id]
 }
 
+resource "hcloud_server" "armsmaster" {
+  name        = "armsmaster"
+  image       = "fedora-38"
+  server_type = "cax11"
+  ssh_keys    = [hcloud_ssh_key.kube_key.id]
+
+  firewall_ids = [hcloud_firewall.firewall.id]
+}
+
 resource "hcloud_firewall" "firewall" {
   name = "firewall"
 
