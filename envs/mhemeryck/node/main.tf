@@ -19,7 +19,24 @@ output "private_key" {
   value     = module.node.private_key
 }
 
-output "kubeconfig" {
-  sensitive = true
-  value     = module.node.kubeconfig
+locals {
+  kubeconfig             = yamldecode(module.node.kubeconfig)
+  client_certificate     = base64decode(local.kubeconfig.users[0].user.client-certificate-data)
+  client_key             = base64decode(local.kubeconfig.users[0].user.client-key-data)
+  cluster_ca_certificate = base64decode(local.kubeconfig.clusters[0].cluster.certificate-authority-data)
+}
+
+
+provider "kubernetes" {
+  host = "http://${module.node.ip}"
+
+  client_certificate     = local.client_certificate
+  client_key             = local.client_key
+  cluster_ca_certificate = local.cluster_ca_certificate
+}
+
+resource "kubernetes_namespace_v1" "hello" {
+  metadata {
+    name = "hello"
+  }
 }
