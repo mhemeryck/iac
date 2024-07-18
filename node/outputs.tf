@@ -4,5 +4,5 @@ output "private_key" {
 }
 
 output "ip" {
-  value = hcloud_server.k3s.ipv6_address
+  value = hcloud_server.k3s.ipv4_address
 }
