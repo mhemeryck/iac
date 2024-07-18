@@ -10,7 +10,7 @@ chmod 400 id_rsa
 IP=$(terraform output -raw ip)
 
 # get the kubeconfig output
-KUBECONFIG=$(ssh -i id_rsa "root@${IP}" cat /etc/rancher/k3s/k3s.yaml)
+KUBECONFIG=$(ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i id_rsa "root@${IP}" cat /etc/rancher/k3s/k3s.yaml)
 
 # drop the key file
 rm -f id_rsa

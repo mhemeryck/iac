@@ -20,5 +20,6 @@ output "private_key" {
 }
 
 output "kubeconfig" {
-  value = module.node.kubeconfig
+  sensitive = true
+  value     = module.node.kubeconfig
 }
