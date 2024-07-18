@@ -52,3 +52,10 @@ resource "hcloud_firewall" "k3s" {
     ]
   }
 }
+
+data "external" "kubeconfig" {
+  depends_on = [hcloud_server.k3s, hcloud_ssh_key.k3s]
+  program = [
+    "bash", "${path.module}/script.sh"
+  ]
+}

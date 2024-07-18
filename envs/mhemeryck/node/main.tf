@@ -13,3 +13,12 @@ output "ip" {
   description = "hetzner instance ip"
   value       = module.node.ip
 }
+
+output "private_key" {
+  sensitive = true
+  value     = module.node.private_key
+}
+
+output "kubeconfig" {
+  value = module.node.kubeconfig
+}
