@@ -28,7 +28,7 @@ output "private_key" {
 
 output "kubeconfig" {
   sensitive = true
-  value     = local.kubeconfig
+  value     = yamlencode(local.kubeconfig)
 }
 
 output "kubecerts" {
