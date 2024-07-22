@@ -48,9 +48,3 @@ provider "kubernetes" {
   client_key             = local.client_key
   cluster_ca_certificate = local.cluster_ca_certificate
 }
-
-resource "kubernetes_namespace_v1" "hello" {
-  metadata {
-    name = "hello"
-  }
-}
