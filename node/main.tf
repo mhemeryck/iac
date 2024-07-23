@@ -1,7 +1,3 @@
-provider "hcloud" {
-  token = var.hcloud_token
-}
-
 resource "hcloud_server" "k3s" {
   name        = "k3s"
   image       = "ubuntu-22.04"

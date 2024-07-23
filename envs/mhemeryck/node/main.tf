@@ -1,11 +1,17 @@
 module "node" {
   source = "../../../node"
 
-  hcloud_token = var.hcloud_token
+  hcloud_token      = var.hcloud_token
+  hetzner_dns_token = var.hetzner_dns_token
 }
 
 variable "hcloud_token" {
   description = "hetzner cloud API token"
+  sensitive   = true
+}
+
+variable "hetzner_dns_token" {
+  description = "hetzner DNS API token"
   sensitive   = true
 }
 
