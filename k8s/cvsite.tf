@@ -48,3 +48,27 @@ resource "kubernetes_deployment_v1" "cvsite" {
     }
   }
 }
+
+resource "kubernetes_ingress_v1" "cvsite" {
+  metadata {
+    name      = "cvsite"
+    namespace = kubernetes_namespace_v1.cvsite.metadata[0].name
+  }
+  spec {
+    rule {
+      host = "mhemeryck.xyz"
+      http {
+        path {
+          backend {
+            service {
+              name = kubernetes_namespace_v1.cvsite.metadata[0].name
+              port {
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
