@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.31.0"
+    }
+  }
+}
+
 provider "kubernetes" {
   host = "https://${var.node_ip}:6443"
 
