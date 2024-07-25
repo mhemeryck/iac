@@ -13,3 +13,8 @@ variable "cluster_ca_certificate" {
 variable "node_ip" {
   description = "IP of the provisioned node"
 }
+
+variable "cert_manager_email" {
+  description = "ACME cert-manager e-mail address"
+  default     = "martijn.hemeryck@gmail.com"
+}
