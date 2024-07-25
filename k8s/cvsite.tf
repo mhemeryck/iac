@@ -50,12 +50,13 @@ resource "kubernetes_deployment_v1" "cvsite" {
 }
 
 resource "kubernetes_ingress_v1" "cvsite" {
+  depends_on = [kubernetes_manifest.cluster_issuer]
   metadata {
     name      = "cvsite"
     namespace = kubernetes_namespace_v1.cvsite.metadata[0].name
     annotations = {
       "kubernetes.io/ingress.class"        = "traefik"
-      "cert-manager.io/cluster-issuer"     = "letsencrypt-staging"
+      "cert-manager.io/cluster-issuer"     = "letsencrypt"
       "ingress.kubernetes.io/ssl-redirect" = "true"
     }
   }
