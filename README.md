@@ -97,7 +97,6 @@ Set up wekan
 
 Provision some secrets (not in repo)
 
-
 ```yaml
 ---
 apiVersion: v1
@@ -147,3 +146,9 @@ Restore backup of the postgres database
 
     kubectl exec -it postgres-0 -- bash
     psql -U postgres -f <out.sql>
+
+# New setup
+
+- apply initial node setup terraform
+- export the kubeconfig
+- run script to apply manifests in correct order

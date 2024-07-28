@@ -34,7 +34,17 @@ output "private_key" {
 
 output "kubeconfig" {
   sensitive = true
-  value     = yamlencode(local.kubeconfig)
+  # replace ip with remote IP
+  value = yamlencode(merge(local.kubeconfig, {
+    clusters = [{
+      cluster = {
+        server                     = "https://${module.node.ip}:6443"
+        certificate-authority-data = base64encode(local.cluster_ca_certificate)
+      },
+      name = "default"
+    }]
+    }
+  ))
 }
 
 output "kubecerts" {
