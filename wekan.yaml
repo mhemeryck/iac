@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: wekan
-          image: wekanteam/wekan:v7.44
+          image: wekanteam/wekan:v7.51
           env:
             - name: MONGO_URL
               value: mongodb://mongodb/wekan
@@ -71,7 +71,7 @@ spec:
     spec:
       containers:
         - name: mongo
-          image: mongo:4.2.23-bionic
+          image: mongo:6.0.16
           volumeMounts:
             - name: mongodb
               mountPath: /data/db
@@ -103,7 +103,7 @@ metadata:
 spec:
   tls:
     - hosts:
-        - mhemeryck.xyz
+        - wekan.mhemeryck.xyz
       secretName: wekan-mhemeryck-xyz-tls
   rules:
     - host: wekan.mhemeryck.xyz
