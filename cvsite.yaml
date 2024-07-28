@@ -48,12 +48,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - cv.mhemeryck.xyz
         - mhemeryck.xyz
       secretName: cv-mhemeryck-xyz-tls
   rules:
-    - host: cv.mhemeryck.xyz
-      http: &cv_http
+    - host: mhemeryck.xyz
+      http:
         paths:
           - pathType: ImplementationSpecific
             backend:
@@ -61,5 +60,3 @@ spec:
                 name: cvsite
                 port:
                   number: 80
-    - host: mhemeryck.xyz
-      http: *cv_http
