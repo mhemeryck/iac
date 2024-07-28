@@ -10,3 +10,5 @@ kubectl apply -f issuer-letsencrypt.yaml
 # Apply cvsite
 kubectl apply -f cvsite.yaml
 
+# Apply wekan
+kubectl apply -f wekan.yaml
