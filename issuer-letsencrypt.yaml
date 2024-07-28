@@ -9,6 +9,7 @@ spec:
     privateKeySecretRef:
       name: letsencrypt
     solvers:
-      - http01:
+      - selector: {}
+        http01:
           ingress:
-            class: traefik
+            ingressClassName: traefik
