@@ -56,7 +56,7 @@ resource "kubernetes_ingress_v1" "cvsite" {
     namespace = kubernetes_namespace_v1.cvsite.metadata[0].name
     annotations = {
       "kubernetes.io/ingress.class"        = "traefik"
-      "cert-manager.io/cluster-issuer"     = "letsencrypt"
+      "cert-manager.io/cluster-issuer"     = kubernetes_manifest.cluster_issuer.manifest.metadata[0].name
       "ingress.kubernetes.io/ssl-redirect" = "true"
     }
   }
