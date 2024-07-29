@@ -12,3 +12,6 @@ kubectl apply -f cvsite.yaml
 
 # Apply wekan
 kubectl apply -f wekan.yaml
+
+# Apply bitwarden
+kubectl apply -f bitwarden.yaml
