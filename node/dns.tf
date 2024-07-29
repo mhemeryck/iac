@@ -18,3 +18,11 @@ resource "hetznerdns_record" "wekan" {
   type    = "A"
   ttl     = 300
 }
+
+resource "hetznerdns_record" "bitwarden" {
+  zone_id = hetznerdns_zone.xyz.id
+  name    = "bitwarden"
+  value   = hcloud_server.k3s.ipv4_address
+  type    = "A"
+  ttl     = 300
+}

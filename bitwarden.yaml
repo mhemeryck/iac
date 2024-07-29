@@ -1,8 +1,14 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bitwarden
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bitwarden
+  namespace: bitwarden
 spec:
   selector:
     matchLabels:
@@ -23,7 +29,7 @@ spec:
             claimName: vault
       containers:
         - name: bitwarden
-          image: vaultwarden/server:1.28.1-alpine
+          image: vaultwarden/server:1.31.0-alpine
           volumeMounts:
             - name: vault
               mountPath: /data
@@ -59,6 +65,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: bitwarden
+  namespace: bitwarden
 spec:
   selector:
     app: bitwarden
@@ -70,9 +77,97 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: vault
+  namespace: bitwarden
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 256Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pgdata
+  namespace: bitwarden
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: bitwarden
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: postgres-pgdata
+      containers:
+        - name: postgres
+          image: postgres:16.3-alpine3.20
+          resources:
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: bitwarden
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bitwarden
+  namespace: bitwarden
+  annotations:
+    kubernetes.io/ingress.className: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - bitwarden.mhemeryck.xyz
+      secretName: bitwarden-mhemeryck-xyz-tls
+  rules:
+    - host: bitwarden.mhemeryck.xyz
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: bitwarden
+                port:
+                  number: 80
