@@ -1,11 +1,6 @@
 # Infrastructure as code
 
-This is a first project where I wanted to apply some newly learned concepts in the real world, specifically:
-
-- [terraform] for provisioning the infrastructure
-- [k3sup] for bootstrapping a minimal one-node [k3s]-based kubernetes cluster
-- [traefik] -- built into k3s as an ingress controller and TLS termination
-- [cert-manager] for automatically supporting TLS for the different endpoints
+This is the repo that serves some personal stuff over at [mhemeryck.xyz]
 
 The projects I did deploy were
 
@@ -13,11 +8,9 @@ The projects I did deploy were
 - [wekan] an open-source alternative to [trello], which I use for my own planning
 - [vaultwarden] open-source version of [bitwarden] to host own password manager
 
+[mhemeryck.xyz]: https://mhemeryck.xyz
 [terraform]: https://terraform.io
-[k3sup]: https://k3sup.dev
 [k3s]: https://k3s.io
-[traefik]: https://containo.us/traefik/
-[cert-manager]: https://cert-manager.io/docs/installation/kubernetes/
 [cvsite]: https://github.com/mhemeryck/cvsite
 [wekan]: https://wekan.github.io/
 [trello]: https://trello.com/
@@ -28,21 +21,22 @@ The projects I did deploy were
 
 Apply terraform setup; I do get the token from [pass]
 
-    export TF_VAR_do_token=`pass show <mytoken>`
+    export TF_VAR_hetzner_dns_token=`pass show hetzner_dns_token`
     export TF_VAR_hcloud_token=`pass show <mytoken>`
+
+The module for managing the node and setting up k3s is in the `node` folder.
+I do also have an `envs` folder to then use this module.
+To run:
+
+    cd envs/mhemeryck/node
+    terraform init
     terraform apply
 
-[pass]: https://www.passwordstore.org/
+After this step, the node should be up and running.
 
-## provision k3s
+The kubeconfig for the next step can be exported through
 
-Bootstrap
-
-    k3sup install --ip $(terraform output ip) --user root --ssh-key=kube_key --local-path=./kubeconfig
-
-get the kubeconfig file afterwards
-
-    k3sup install --ip $(terraform output ip) --user root --ssh-key=kube_key --local-path=./kubeconfig --skip-install
+    terraform output -raw kubeconfig > kubeconfig
 
 Set up kubectl; the kubeconfig file should just be in the folder ready
 
@@ -52,6 +46,8 @@ Merge the kubeconfig file afterwards:
 
     export KUBECONFIG~=/.kube/config:`pwd`/kubeconfig
     kubectl config view --flatten > out
+
+[pass]: https://www.passwordstore.org/
 
 ## cvsite
 
@@ -73,25 +69,17 @@ Add the cluster issuers
 
     kubectl apply -f issuer-letsencrypt-staging.yaml
 
-Add the ingress, referencing the cluster TLS issuer:
-
-    kubectl apply -f ingress.yaml
-
 ## wekan
 
-Setup mongodb
+Set up wekan
 
-    kubectl apply -f mongo.yaml
+    kubectl apply -f wekan.yaml
 
 In case of restoring an older <dump> folder:
 
     kubectl cp <dump> default/mongodb-app-5cd84bf6df-ng5pv:/tmp/
     kubectl exec -it mongodb-app-7b46f9c87-pdbg5 -- bash
     mongorestore /tmp/<dump>
-
-Set up wekan
-
-    kubectl apply -f wekan.yaml
 
 ## bitwarden
 
@@ -119,23 +107,13 @@ stringData:
   database_url: "postgresql://<username>:<password>@<host>:<port>"
 ```
 
+Applying those secrets:
+
     kubectl apply -f secrets.yaml
-
-Setup a postgres db
-
-    kubectl apply -f postgres.yaml
 
 Setup bitwarden deployment
 
     kubectl apply -f bitwarden.yaml
-
-Update ingress
-
-    kubectl apply -f ingress.yaml
-
-Update the DNS entries with terraform
-
-    terraform apply
 
 Create a backup of the postgres database
 
@@ -146,9 +124,3 @@ Restore backup of the postgres database
 
     kubectl exec -it postgres-0 -- bash
     psql -U postgres -f <out.sql>
-
-# New setup
-
-- apply initial node setup terraform
-- export the kubeconfig
-- run script to apply manifests in correct order
