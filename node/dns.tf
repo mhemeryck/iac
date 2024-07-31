@@ -16,7 +16,7 @@ resource "hetznerdns_record" "wekan" {
   name    = "wekan"
   value   = hcloud_server.k3s.ipv4_address
   type    = "A"
-  ttl     = 300
+  ttl     = 3600
 }
 
 resource "hetznerdns_record" "bitwarden" {
@@ -24,5 +24,13 @@ resource "hetznerdns_record" "bitwarden" {
   name    = "bitwarden"
   value   = hcloud_server.k3s.ipv4_address
   type    = "A"
-  ttl     = 300
+  ttl     = 3600
+}
+
+resource "hetznerdns_record" "blog" {
+  zone_id = hetznerdns_zone.xyz.id
+  name    = "blog"
+  value   = "mhemeryck.github.io."
+  type    = "CNAME"
+  ttl     = 3600
 }
