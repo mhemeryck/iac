@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -42,18 +43,17 @@ metadata:
   name: web
   namespace: cvsite
   annotations:
-    kubernetes.io/ingress.class: traefik
+    kubernetes.io/ingress.className: traefik
     cert-manager.io/cluster-issuer: letsencrypt
     ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
     - hosts:
-        - cv.mhemeryck.com
-        - mhemeryck.com
-      secretName: cv-mhemeryck-com-tls
+        - mhemeryck.xyz
+      secretName: cv-mhemeryck-xyz-tls
   rules:
-    - host: cv.mhemeryck.com
-      http: &cv_http
+    - host: mhemeryck.xyz
+      http:
         paths:
           - pathType: ImplementationSpecific
             backend:
@@ -61,5 +61,3 @@ spec:
                 name: cvsite
                 port:
                   number: 80
-    - host: mhemeryck.com
-      http: *cv_http
