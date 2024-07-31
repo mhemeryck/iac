@@ -34,3 +34,16 @@ resource "hetznerdns_record" "blog" {
   type    = "CNAME"
   ttl     = 3600
 }
+
+resource "hetznerdns_zone" "com" {
+  name = "mhemeryck.com"
+  ttl  = 3600
+}
+
+resource "hetznerdns_record" "com" {
+  zone_id = hetznerdns_zone.com.id
+  name    = "mhemeryck.com"
+  value   = "mhemeryck.xyz."
+  type    = "CNAME"
+  ttl     = 3600
+}
