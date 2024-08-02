@@ -42,8 +42,8 @@ resource "hetznerdns_zone" "com" {
 
 resource "hetznerdns_record" "com" {
   zone_id = hetznerdns_zone.com.id
-  name    = "mhemeryck.com"
-  value   = "mhemeryck.xyz."
-  type    = "CNAME"
+  name    = "@"
+  value   = hcloud_server.k3s.ipv4_address
+  type    = "A"
   ttl     = 3600
 }
