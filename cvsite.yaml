@@ -50,8 +50,10 @@ spec:
   tls:
     - hosts:
         - mhemeryck.xyz
-        - mhemeryck.com
       secretName: cv-mhemeryck-xyz-tls
+    - hosts:
+        - mhemeryck.com
+      secretName: cv-mhemeryck-com-tls
   rules:
     - host: mhemeryck.xyz
       http: &cv_http
