@@ -51,9 +51,12 @@ spec:
     - hosts:
         - mhemeryck.xyz
       secretName: cv-mhemeryck-xyz-tls
+    - hosts:
+        - mhemeryck.com
+      secretName: cv-mhemeryck-com-tls
   rules:
     - host: mhemeryck.xyz
-      http:
+      http: &cv_http
         paths:
           - pathType: ImplementationSpecific
             backend:
@@ -61,3 +64,5 @@ spec:
                 name: cvsite
                 port:
                   number: 80
+    - host: mhemeryck.com
+      http: *cv_http
