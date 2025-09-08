@@ -34,3 +34,11 @@ resource "hetznerdns_record" "blog" {
   type    = "CNAME"
   ttl     = 3600
 }
+
+resource "hetznerdns_record" "facturette" {
+  zone_id = hetznerdns_zone.xyz.id
+  name    = "facturette"
+  value   = hcloud_server.k3s.ipv4_address
+  type    = "A"
+  ttl     = 3600
+}

@@ -1,0 +1,161 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: facturette
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: facturette
+  namespace: facturette
+spec:
+  selector:
+    matchLabels:
+      app: facturette
+  template:
+    metadata:
+      labels:
+        app: facturette
+    spec:
+      containers:
+        - name: facturette
+          image: mhemeryck/facturette:latest
+          env:
+            - name: ALLOWED_HOSTS
+              value: facturette.mhemeryck.xyz
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: db_url
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: facturette
+                  key: secret_key
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+          ports:
+            - containerPort: 8000
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: facturette
+  namespace: facturette
+spec:
+  selector:
+    app: facturette
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads
+  namespace: facturette
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: facturette
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: postgres-pgdata
+      containers:
+        - name: postgres
+          image: postgres:17.6-alpine
+          resources:
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: facturette
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pgdata
+  namespace: facturette
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: facturette
+  namespace: facturette
+  annotations:
+    kubernetes.io/ingress.className: traefik
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - facturette.mhemeryck.xyz
+      secretName: facturette-mhemeryck-xyz-tls
+  rules:
+    - host: facturette.mhemeryck.xyz
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: facturette
+                port:
+                  number: 80
