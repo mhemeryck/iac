@@ -24,6 +24,8 @@ spec:
           env:
             - name: ALLOWED_HOSTS
               value: facturette.mhemeryck.xyz
+            - name: CSRF_TRUSTED_ORIGINS
+              value: https://facturette.mhemeryck.xyz
             - name: DB_URL
               valueFrom:
                 secretKeyRef:
