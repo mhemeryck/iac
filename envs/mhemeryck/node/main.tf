@@ -64,3 +64,28 @@ provider "kubernetes" {
   client_key             = local.client_key
   cluster_ca_certificate = local.cluster_ca_certificate
 }
+
+import {
+  to = module.node.hcloud_zone_rrset.xyz
+  id = "mhemeryck.xyz/@/A"
+}
+
+import {
+  to = module.node.hcloud_zone_rrset.bitwarden
+  id = "mhemeryck.xyz/bitwarden/A"
+}
+
+import {
+  to = module.node.hcloud_zone_rrset.wekan
+  id = "mhemeryck.xyz/wekan/A"
+}
+
+import {
+  to = module.node.hcloud_zone_rrset.facturette
+  id = "mhemeryck.xyz/facturette/A"
+}
+
+import {
+  to = module.node.hcloud_zone_rrset.blog
+  id = "mhemeryck.xyz/blog/CNAME"
+}

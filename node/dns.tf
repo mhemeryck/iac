@@ -1,44 +1,43 @@
-resource "hetznerdns_zone" "xyz" {
+resource "hcloud_zone" "xyz" {
   name = "mhemeryck.xyz"
-  ttl  = 3600
+  mode = "primary"
+
+  ttl = 3600
+
+  delete_protection = false
 }
 
-resource "hetznerdns_record" "xyz" {
-  zone_id = hetznerdns_zone.xyz.id
+resource "hcloud_zone_rrset" "xyz" {
+  zone    = hcloud_zone.xyz.name
   name    = "@"
-  value   = hcloud_server.k3s.ipv4_address
   type    = "A"
-  ttl     = 3600
+  records = [{ value = hcloud_server.k3s.ipv4_address }]
 }
 
-resource "hetznerdns_record" "wekan" {
-  zone_id = hetznerdns_zone.xyz.id
-  name    = "wekan"
-  value   = hcloud_server.k3s.ipv4_address
-  type    = "A"
-  ttl     = 3600
-}
-
-resource "hetznerdns_record" "bitwarden" {
-  zone_id = hetznerdns_zone.xyz.id
+resource "hcloud_zone_rrset" "bitwarden" {
+  zone    = hcloud_zone.xyz.name
   name    = "bitwarden"
-  value   = hcloud_server.k3s.ipv4_address
   type    = "A"
-  ttl     = 3600
+  records = [{ value = hcloud_server.k3s.ipv4_address }]
 }
 
-resource "hetznerdns_record" "blog" {
-  zone_id = hetznerdns_zone.xyz.id
-  name    = "blog"
-  value   = "mhemeryck.github.io."
-  type    = "CNAME"
-  ttl     = 3600
+resource "hcloud_zone_rrset" "wekan" {
+  zone    = hcloud_zone.xyz.name
+  name    = "wekan"
+  type    = "A"
+  records = [{ value = hcloud_server.k3s.ipv4_address }]
 }
 
-resource "hetznerdns_record" "facturette" {
-  zone_id = hetznerdns_zone.xyz.id
+resource "hcloud_zone_rrset" "facturette" {
+  zone    = hcloud_zone.xyz.name
   name    = "facturette"
-  value   = hcloud_server.k3s.ipv4_address
   type    = "A"
-  ttl     = 3600
+  records = [{ value = hcloud_server.k3s.ipv4_address }]
+}
+
+resource "hcloud_zone_rrset" "blog" {
+  zone    = hcloud_zone.xyz.name
+  name    = "blog"
+  type    = "CNAME"
+  records = [{ value = "mhemeryck.github.io." }]
 }
