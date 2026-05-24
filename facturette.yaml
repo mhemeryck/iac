@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: facturette
-          image: mhemeryck/facturette:latest
+          image: mhemeryck/facturette:20260524-export
           env:
             - name: ALLOWED_HOSTS
               value: facturette.mhemeryck.xyz
