@@ -29,7 +29,7 @@ spec:
             claimName: vault
       containers:
         - name: bitwarden
-          image: vaultwarden/server:1.33.2-alpine
+          image: vaultwarden/server:1.36.0-alpine
           volumeMounts:
             - name: vault
               mountPath: /data
@@ -54,6 +54,8 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: database_url
+            - name: DOMAIN
+              value: "https://bitwarden.mhemeryck.xyz"
             - name: SIGNUPS_ALLOWED
               value: "false"
             - name: INVITATIONS_ALLOWED

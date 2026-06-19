@@ -4,5 +4,6 @@ kube_key
 kube_key.pub
 terraform.tfstate
 *.backup
+backups/
 secrets.yaml
 envs/mhemeryck/node/private.key
