@@ -40,6 +40,13 @@ resource "hcloud_zone_rrset" "facturette" {
   records = [{ value = hcloud_server.k3s.ipv4_address }]
 }
 
+resource "hcloud_zone_rrset" "goalkeepr" {
+  zone    = hcloud_zone.xyz.name
+  name    = "goalkeepr"
+  type    = "A"
+  records = [{ value = hcloud_server.k3s.ipv4_address }]
+}
+
 resource "hcloud_zone_rrset" "www" {
   zone    = hcloud_zone.xyz.name
   name    = "www"

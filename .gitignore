@@ -1,4 +1,3 @@
-tags
 .terraform/
 kube_key
 kube_key.pub
@@ -7,3 +6,4 @@ terraform.tfstate
 backups/
 secrets.yaml
 envs/mhemeryck/node/private.key
+.devenv/
