@@ -1,0 +1,165 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: goalkeepr
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goalkeepr
+  namespace: goalkeepr
+spec:
+  selector:
+    matchLabels:
+      app: goalkeepr
+  template:
+    metadata:
+      labels:
+        app: goalkeepr
+    spec:
+      containers:
+        - name: goalkeepr
+          image: mhemeryck/goalkeepr:2026.08.16.1
+          command:
+            - sh
+            - -c
+            - python manage.py migrate && uvicorn goalkeepr.asgi:application --host 0.0.0.0 --port 8000
+          env:
+            - name: DJANGO_ALLOWED_HOSTS
+              value: goalkeepr.mhemeryck.xyz
+            - name: DJANGO_CSRF_TRUSTED_ORIGINS
+              value: https://goalkeepr.mhemeryck.xyz
+            - name: DJANGO_DEBUG
+              value: "false"
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: goalkeepr
+                  key: secret_key
+            - name: POSTGRES_DB
+              value: goalkeepr
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
+            - name: TEAM_NAME
+              value: K.F.C. Sparta Kolmont
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: goalkeepr
+  namespace: goalkeepr
+spec:
+  selector:
+    app: goalkeepr
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: goalkeepr
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:18-alpine
+          resources:
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql
+          env:
+            - name: POSTGRES_DB
+              value: goalkeepr
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: postgres-pgdata
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: goalkeepr
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pgdata
+  namespace: goalkeepr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: goalkeepr
+  namespace: goalkeepr
+  annotations:
+    kubernetes.io/ingress.className: traefik
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - goalkeepr.mhemeryck.xyz
+      secretName: goalkeepr-mhemeryck-xyz-tls
+  rules:
+    - host: goalkeepr.mhemeryck.xyz
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: goalkeepr
+                port:
+                  number: 80
