@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: goalkeepr
-          image: mhemeryck/goalkeepr:2026.08.16.1
+          image: mhemeryck/goalkeepr:2026.08.17.1
           command:
             - sh
             - -c
