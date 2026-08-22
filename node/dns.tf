@@ -53,3 +53,19 @@ resource "hcloud_zone_rrset" "www" {
   type    = "CNAME"
   records = [{ value = "mhemeryck.github.io." }]
 }
+
+resource "hcloud_zone" "goalkeepr_app" {
+  name = "goalkeepr.app"
+  mode = "primary"
+
+  ttl = 3600
+
+  delete_protection = false
+}
+
+resource "hcloud_zone_rrset" "goalkeepr_app" {
+  zone    = hcloud_zone.goalkeepr_app.name
+  name    = "@"
+  type    = "A"
+  records = [{ value = hcloud_server.k3s.ipv4_address }]
+}
