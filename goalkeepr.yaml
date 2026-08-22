@@ -33,9 +33,9 @@ spec:
             - python manage.py migrate && uvicorn goalkeepr.asgi:application --host 0.0.0.0 --port 8000
           env:
             - name: DJANGO_ALLOWED_HOSTS
-              value: goalkeepr.mhemeryck.xyz
+              value: goalkeepr.mhemeryck.xyz,goalkeepr.app
             - name: DJANGO_CSRF_TRUSTED_ORIGINS
-              value: https://goalkeepr.mhemeryck.xyz
+              value: https://goalkeepr.mhemeryck.xyz,https://goalkeepr.app
             - name: DJANGO_DEBUG
               value: "false"
             - name: DJANGO_SECRET_KEY
@@ -167,9 +167,19 @@ spec:
   tls:
     - hosts:
         - goalkeepr.mhemeryck.xyz
+        - goalkeepr.app
       secretName: goalkeepr-mhemeryck-xyz-tls
   rules:
     - host: goalkeepr.mhemeryck.xyz
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: goalkeepr
+                port:
+                  number: 80
+    - host: goalkeepr.app
       http:
         paths:
           - pathType: ImplementationSpecific
