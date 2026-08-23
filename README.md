@@ -124,3 +124,11 @@ Restore backup of the postgres database
 
     kubectl exec -it postgres-0 -- bash
     psql -U postgres -f <out.sql>
+
+## goalkeepr
+
+Deploy Goalkeepr and its scheduled PostgreSQL backup CronJob:
+
+    kubectl apply -f goalkeepr.yaml
+
+See [Goalkeepr database backups](docs/goalkeepr-backups.md) for the AWS setup, Kubernetes Secret, and restore procedure.

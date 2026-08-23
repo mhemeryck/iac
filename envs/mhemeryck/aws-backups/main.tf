@@ -14,13 +14,19 @@ provider "aws" {
 }
 
 module "goalkeepr_backups" {
-  source = "../../../aws-backups"
+  source              = "../../../aws-backups"
+  billing_alert_email = var.billing_alert_email
 }
 
 variable "aws_region" {
   description = "AWS region containing the Goalkeepr backup bucket."
   type        = string
   default     = "eu-central-1"
+}
+
+variable "billing_alert_email" {
+  description = "Email address receiving Goalkeepr backup budget alerts."
+  type        = string
 }
 
 output "bucket_name" {

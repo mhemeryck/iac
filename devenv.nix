@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   packages = with pkgs; [
     pass
@@ -8,11 +8,9 @@
   ];
 
   env = {
-    AWS_PROFILE = "mhemeryck";
+    AWS_PROFILE                = "mhemeryck";
+    TF_VAR_billing_alert_email = config.secretspec.secrets.BILLING_ALERT_EMAIL;
+    TF_VAR_do_token            = config.secretspec.secrets.DIGITALOCEAN_TOKEN;
+    TF_VAR_hcloud_token        = config.secretspec.secrets.HCLOUD_TOKEN;
   };
-
-  enterShell = ''
-    export TF_VAR_do_token="$(pass show home/digitalocean_token)"
-    export TF_VAR_hcloud_token="$(pass show hcloud_token)"
-  '';
 }

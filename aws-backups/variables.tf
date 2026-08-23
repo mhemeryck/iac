@@ -3,3 +3,8 @@ variable "aws_region" {
   type        = string
   default     = "eu-central-1"
 }
+
+variable "billing_alert_email" {
+  description = "Email address receiving Goalkeepr backup budget alerts."
+  type        = string
+}

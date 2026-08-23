@@ -1,1 +1,6 @@
 allow_unfree: true
+
+secretspec:
+  enable: true
+  provider: pass
+  profile: default
