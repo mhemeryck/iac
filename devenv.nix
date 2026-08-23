@@ -3,7 +3,13 @@
   packages = with pkgs; [
     pass
     jq
+    terraform
+    awscli2
   ];
+
+  env = {
+    AWS_PROFILE = "mhemeryck";
+  };
 
   enterShell = ''
     export TF_VAR_do_token="$(pass show home/digitalocean_token)"
