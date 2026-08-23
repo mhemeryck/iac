@@ -142,6 +142,86 @@ spec:
     - port: 5432
       targetPort: 5432
 ---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: goalkeepr
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 7
+  successfulJobsHistoryLimit: 7
+  startingDeadlineSeconds: 3600
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: backup
+              emptyDir: {}
+          initContainers:
+            - name: dump
+              image: postgres:18-alpine
+              securityContext:
+                runAsUser: 0
+              command:
+                - /bin/sh
+                - -ceu
+                - |
+                  pg_dump --format=custom --no-owner --no-privileges --file=/backup/goalkeepr.dump
+                  pg_restore --list /backup/goalkeepr.dump >/dev/null
+              env:
+                - name: PGDATABASE
+                  value: goalkeepr
+                - name: PGHOST
+                  value: postgres
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres
+                      key: password
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres
+                      key: username
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          containers:
+            - name: upload
+              image: amazon/aws-cli:2.35.11
+              command:
+                - /bin/sh
+                - -ceu
+                - |
+                  timestamp="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
+                  aws s3 cp /backup/goalkeepr.dump "s3://${S3_BUCKET}/goalkeepr/${timestamp}.dump" --only-show-errors
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: goalkeepr-backup
+                      key: access_key_id
+                - name: AWS_DEFAULT_REGION
+                  value: eu-central-1
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: goalkeepr-backup
+                      key: secret_access_key
+                - name: S3_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: goalkeepr-backup
+                      key: bucket
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
