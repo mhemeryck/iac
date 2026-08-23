@@ -64,6 +64,12 @@ To bootstrap it from scratch, temporarily omit the `backend "s3"` block, initial
 Its state is stored at `platform/state-backend/terraform.tfstate`.
 Migrate other roots to the shared bucket only when they are next changed.
 
+## GitHub Actions
+
+The `github-actions` module creates the shared GitHub OpenID Connect provider and `home-github-actions` role.
+`envs/mhemeryck/github-actions` instantiates the module.
+The role trusts `master` workflows in `mhemeryck` repositories and has administrator access to the AWS account.
+
 ## cvsite
 
 Add the deployment and service
