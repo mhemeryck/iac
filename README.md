@@ -49,6 +49,21 @@ Merge the kubeconfig file afterwards:
 
 [pass]: https://www.passwordstore.org/
 
+## Terraform state
+
+The shared Terraform state bucket is managed by the `state-backend` module.
+It stores each independent Terraform root under its own key and uses S3 lockfiles.
+
+To bootstrap it from scratch, temporarily omit the `backend "s3"` block, initialize and apply with local state, then restore the block and migrate the state:
+
+    cd envs/mhemeryck/state-backend
+    terraform init
+    terraform apply
+    terraform init -migrate-state
+
+Its state is stored at `platform/state-backend/terraform.tfstate`.
+Migrate other roots to the shared bucket only when they are next changed.
+
 ## cvsite
 
 Add the deployment and service
