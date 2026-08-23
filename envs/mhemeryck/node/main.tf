@@ -1,3 +1,12 @@
+terraform {
+  backend "s3" {
+    bucket       = "mhemeryck-terraform-state-109185239364"
+    key          = "platform/node/terraform.tfstate"
+    region       = "eu-central-1"
+    use_lockfile = true
+  }
+}
+
 module "node" {
   source = "../../../node"
 
@@ -58,4 +67,3 @@ provider "kubernetes" {
   client_key             = local.client_key
   cluster_ca_certificate = local.cluster_ca_certificate
 }
-
