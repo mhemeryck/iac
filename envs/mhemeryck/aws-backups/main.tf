@@ -7,6 +7,13 @@ terraform {
       version = "~> 6.42"
     }
   }
+
+  backend "s3" {
+    bucket       = "mhemeryck-terraform-state-109185239364"
+    key          = "goalkeepr/backups/terraform.tfstate"
+    region       = "eu-central-1"
+    use_lockfile = true
+  }
 }
 
 provider "aws" {
