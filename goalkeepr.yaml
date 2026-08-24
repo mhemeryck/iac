@@ -3,3 +3,89 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: goalkeepr
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: goalkeepr-terraform
+  namespace: goalkeepr
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: goalkeepr-terraform
+  namespace: goalkeepr
+rules:
+  - apiGroups: [""]
+    resources:
+      - persistentvolumeclaims
+      - secrets
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - statefulsets
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - cronjobs
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: goalkeepr-terraform
+  namespace: goalkeepr
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: goalkeepr-terraform
+subjects:
+  - kind: ServiceAccount
+    name: goalkeepr-terraform
+    namespace: goalkeepr
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: goalkeepr-terraform-token
+  namespace: goalkeepr
+  annotations:
+    kubernetes.io/service-account.name: goalkeepr-terraform
+type: kubernetes.io/service-account-token
