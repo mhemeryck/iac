@@ -34,18 +34,8 @@ To run:
 
 After this step, the node should be up and running.
 
-The kubeconfig for the next step can be exported through
-
-    terraform output -raw kubeconfig > kubeconfig
-
-Set up kubectl; the kubeconfig file should just be in the folder ready
-
-    export KUBECONFIG=`pwd`/kubeconfig
-
-Merge the kubeconfig file afterwards:
-
-    export KUBECONFIG~=/.kube/config:`pwd`/kubeconfig
-    kubectl config view --flatten > out
+The HCloud-only kubeconfig is stored in the SecretSpec `pass` entry `secretspec/iac/default/KUBECONFIG`.
+Entering the devenv materializes it at `$DEVENV_RUNTIME/kubeconfig` and sets `KUBECONFIG`, so standard `kubectl` commands use the HCloud cluster.
 
 [pass]: https://www.passwordstore.org/
 
