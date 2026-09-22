@@ -35,7 +35,7 @@ To run:
 After this step, the node should be up and running.
 
 The HCloud-only kubeconfig is stored in the SecretSpec `pass` entry `secretspec/iac/default/KUBECONFIG`.
-Entering the devenv materializes it at `$DEVENV_RUNTIME/kubeconfig` and sets `KUBECONFIG`, so standard `kubectl` commands use the HCloud cluster.
+Entering the devenv sets `KUBECONFIG`, so standard `kubectl` commands use the HCloud cluster.
 
 [pass]: https://www.passwordstore.org/
 
