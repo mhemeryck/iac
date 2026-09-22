@@ -35,7 +35,7 @@ resource "kubernetes_deployment_v1" "wekan" {
 
           env {
             name  = "MONGO_URL"
-            value = "mongodb://mongodb/wekan"
+            value = "mongodb://${kubernetes_service_v1.mongodb.metadata[0].name}/wekan"
           }
 
           env {
