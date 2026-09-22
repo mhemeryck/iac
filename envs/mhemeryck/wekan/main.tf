@@ -29,5 +29,4 @@ module "wekan" {
 variable "kubeconfig_path" {
   description = "Path to the kubeconfig used to manage the Wekan namespace."
   type        = string
-  default     = "~/.kube/config"
 }
