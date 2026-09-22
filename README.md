@@ -84,12 +84,14 @@ Add the cluster issuers
 
 Set up wekan
 
-    kubectl apply -f wekan.yaml
+    cd envs/mhemeryck/wekan
+    terraform init
+    terraform apply
 
 In case of restoring an older <dump> folder:
 
-    kubectl cp <dump> default/mongodb-app-5cd84bf6df-ng5pv:/tmp/
-    kubectl exec -it mongodb-app-7b46f9c87-pdbg5 -- bash
+    kubectl cp <dump> wekan/mongodb-0:/tmp/
+    kubectl exec -it --namespace wekan mongodb-0 -- bash
     mongorestore /tmp/<dump>
 
 ## bitwarden
