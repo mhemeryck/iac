@@ -29,6 +29,9 @@ resource "kubernetes_deployment_v1" "wekan" {
       }
 
       spec {
+        automount_service_account_token = false
+        enable_service_links            = false
+
         container {
           name  = "wekan"
           image = var.wekan_image
@@ -49,6 +52,12 @@ resource "kubernetes_deployment_v1" "wekan" {
         }
       }
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      spec[0].template[0].metadata[0].annotations["kubectl.kubernetes.io/restartedAt"],
+    ]
   }
 }
 
@@ -115,6 +124,9 @@ resource "kubernetes_stateful_set_v1" "mongodb" {
       }
 
       spec {
+        automount_service_account_token = false
+        enable_service_links            = false
+
         container {
           name  = "mongo"
           image = var.mongodb_image
@@ -162,9 +174,7 @@ resource "kubernetes_ingress_v1" "wekan" {
     namespace = kubernetes_namespace_v1.wekan.metadata[0].name
 
     annotations = {
-      "cert-manager.io/cluster-issuer"     = var.cluster_issuer
-      "ingress.kubernetes.io/ssl-redirect" = "true"
-      "kubernetes.io/ingress.className"    = var.ingress_class_name
+      "cert-manager.io/cluster-issuer" = var.cluster_issuer
     }
   }
 
