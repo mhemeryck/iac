@@ -117,46 +117,23 @@ In case of restoring an older <dump> folder:
     kubectl exec -it --namespace wekan mongodb-0 -- bash
     mongorestore /tmp/<dump>
 
-## bitwarden
+## vaultwarden
 
-Provision some secrets (not in repo)
+`envs/mhemeryck/vaultwarden` manages the existing `bitwarden` namespace, including its two Secrets and two data PVCs, in a separate S3-backed Terraform state.
+The existing resources were imported without replacing or changing them.
+Existing Secret data is stored in state and left unchanged by Terraform, so no local `secrets.yaml` is needed to manage the deployment.
+The state contains plaintext Secret values; restrict access to the state bucket accordingly.
+The cert-manager TLS Secret remains managed by cert-manager.
 
-```yaml
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: vault-secrets
-type: Opaque
-stringData:
-  admin_token: "..."
-  yubico_client_id: "..."
-  yubico_secret_key: "..."
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: postgres
-type: Opaque
-stringData:
-  password: "..."
-  database_url: "postgresql://<username>:<password>@<host>:<port>"
-```
+Enter the devenv with a working kubeconfig and run:
 
-Applying those secrets:
+    cd envs/mhemeryck/vaultwarden
+    terraform init
+    terraform plan
+    terraform apply
 
-    kubectl apply -f secrets.yaml
+Review the plan before applying, especially any proposed changes to the namespace, PVCs, Secrets, Deployment, or StatefulSet.
+Remove any old local Vaultwarden secrets file once it is no longer needed.
 
-Setup bitwarden deployment
-
-    kubectl apply -f bitwarden.yaml
-
-Create a backup of the postgres database
-
-    kubectl exec -it postgres-0 -- bash
-    pg_dump -U postgres <out.sql>
-
-Restore backup of the postgres database
-
-    kubectl exec -it postgres-0 -- bash
-    psql -U postgres -f <out.sql>
+Importing preserves the credentials already in Kubernetes, but the state alone is not a declarative source for recreating a lost Secret.
+Daily backups for Postgres and Vaultwarden's `/data` volume are a separate follow-up.
