@@ -13,5 +13,6 @@
     TF_VAR_hcloud_token = config.secretspec.secrets.HCLOUD_TOKEN;
     TF_VAR_kubeconfig_path = config.secretspec.secrets.KUBECONFIG;
     KUBECONFIG = config.secretspec.secrets.KUBECONFIG;
+    TF_PLUGIN_CACHE_DIR = "${builtins.getEnv "HOME"}/.cache/terraform/plugin-cache";
   };
 }

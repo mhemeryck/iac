@@ -19,6 +19,10 @@ The projects I did deploy were
 
 ## terraform
 
+The devenv shares Terraform provider downloads across roots in `~/.cache/terraform/plugin-cache`.
+Create that directory before running `terraform init` for the first time.
+Terraform still keeps each root's modules and working data in its local `.terraform/` directory.
+
 Apply terraform setup; I do get the token from [pass]
 
     export TF_VAR_hetzner_dns_token=`pass show hetzner_dns_token`
@@ -87,6 +91,25 @@ Set up wekan
     cd envs/mhemeryck/wekan
     terraform init
     terraform apply
+
+The `mongodb-backup` CronJob dumps the `wekan` database daily at 02:00 (cluster time) and uploads a compressed archive to `s3://wekan-backups-<aws-account-id>/wekan/`.
+The bucket retains backups for 90 days with Object Lock governance retention.
+AWS upload credentials are stored in the Kubernetes Secret and Terraform state; restrict access to both.
+To check a backup immediately after applying:
+
+    kubectl create job --namespace wekan --from=cronjob/mongodb-backup mongodb-backup-manual
+    kubectl wait --namespace wekan --for=condition=complete job/mongodb-backup-manual --timeout=10m
+    kubectl logs --namespace wekan job/mongodb-backup-manual -c upload
+    aws s3 ls s3://wekan-backups-$(aws sts get-caller-identity --query Account --output text)/wekan/
+
+To test a restore, download an archive using an AWS identity with read access to the bucket, then restore it into an isolated MongoDB instance:
+
+    aws s3 cp s3://wekan-backups-<aws-account-id>/wekan/<timestamp>.archive.gz ./wekan.archive.gz
+    docker run -d --rm --name wekan-restore mongo:6.0.26-jammy
+    docker cp ./wekan.archive.gz wekan-restore:/tmp/wekan.archive.gz
+    docker exec wekan-restore mongorestore --gzip --archive=/tmp/wekan.archive.gz --nsInclude='wekan.*'
+    docker exec wekan-restore mongosh --quiet --eval 'db.getSiblingDB("wekan").getCollectionNames()'
+    docker stop wekan-restore
 
 In case of restoring an older <dump> folder:
 
