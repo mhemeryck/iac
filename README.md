@@ -11,6 +11,7 @@ Terraform for most resources; Kubernetes manifests for the rest
 Terraform modules in top-level directories such as `node/`, `wekan/` and `vaultwarden/`
 Instantiations in `envs/mhemeryck/<module>/`, each with its own S3 state key
 Shared state bucket from `state-backend/`; manually managed Kubernetes resources in root-level YAML
+Shared backup storage module in `backup-storage/`; separate buckets and upload identities per service
 
 ## Quickstart: devenv
 
@@ -77,7 +78,25 @@ Password manager and Postgres in the existing `bitwarden` namespace
 Root: `envs/mhemeryck/vaultwarden/`
 Imported Secrets and data PVCs; password-derived Postgres DSN; TLS via cert-manager
 Credentials in S3-backed Terraform state; no local `secrets.yaml` dependency
-Postgres and `/data` backups still pending
+Daily backup at 03:00 cluster time: Postgres dump and `/data` in one archive
+S3: `vaultwarden-backups-<account-id>/vaultwarden/`; 90-day Object Lock retention
+
+On-demand backup:
+
+    kubectl create job -n bitwarden --from=cronjob/vaultwarden-backup vaultwarden-backup-manual
+    kubectl wait -n bitwarden --for=condition=complete job/vaultwarden-backup-manual --timeout=10m
+    kubectl logs -n bitwarden job/vaultwarden-backup-manual -c upload
+    aws s3 ls "s3://vaultwarden-backups-$(aws sts get-caller-identity --query Account --output text)/vaultwarden/"
+
+Archive check; AWS identity with bucket read access:
+
+    bucket="vaultwarden-backups-$(aws sts get-caller-identity --query Account --output text)"
+    aws s3 cp "s3://$bucket/vaultwarden/TIMESTAMP.tar.gz" vaultwarden.tar.gz
+    mkdir -p vaultwarden-restore
+    tar -xzf vaultwarden.tar.gz -C vaultwarden-restore
+    mkdir -p vaultwarden-restore/data
+    tar -xzf vaultwarden-restore/data.tar.gz -C vaultwarden-restore/data
+    docker run --rm -v "$PWD/vaultwarden-restore:/backup:ro" postgres:16.3-alpine3.20 pg_restore --list /backup/postgres.dump
 
 ## Kubernetes manifests
 

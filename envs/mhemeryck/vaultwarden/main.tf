@@ -2,6 +2,10 @@ terraform {
   required_version = "~> 1.15"
 
   required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.42"
+    }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = "~> 3.0"
@@ -14,6 +18,10 @@ terraform {
     region       = "eu-central-1"
     use_lockfile = true
   }
+}
+
+provider "aws" {
+  region = "eu-central-1"
 }
 
 provider "kubernetes" {

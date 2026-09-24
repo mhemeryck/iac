@@ -1,11 +1,11 @@
 module "backup_storage" {
   source = "../backup-storage"
 
-  name               = "wekan"
-  namespace          = kubernetes_namespace_v1.wekan.metadata[0].name
+  name               = "vaultwarden"
+  namespace          = kubernetes_namespace_v1.bitwarden.metadata[0].name
   retention_days     = 90
-  purpose            = "database-backups"
-  upload_description = "Upload Wekan MongoDB backups without reading or deleting them."
+  purpose            = "database-and-files-backups"
+  upload_description = "Upload Vaultwarden backups without reading or deleting them."
 }
 
 moved {
@@ -33,14 +33,14 @@ moved {
   to   = module.backup_storage.kubernetes_secret_v1.backup
 }
 
-resource "kubernetes_cron_job_v1" "mongodb_backup" {
+resource "kubernetes_cron_job_v1" "backup" {
   metadata {
-    name      = "mongodb-backup"
-    namespace = kubernetes_namespace_v1.wekan.metadata[0].name
+    name      = "vaultwarden-backup"
+    namespace = kubernetes_namespace_v1.bitwarden.metadata[0].name
   }
 
   spec {
-    schedule                      = "0 2 * * *"
+    schedule                      = "0 3 * * *"
     concurrency_policy            = "Forbid"
     failed_jobs_history_limit     = 7
     successful_jobs_history_limit = 7
@@ -73,21 +73,80 @@ resource "kubernetes_cron_job_v1" "mongodb_backup" {
               empty_dir {}
             }
 
+            volume {
+              name = "vault"
+
+              persistent_volume_claim {
+                claim_name = kubernetes_persistent_volume_claim_v1.vault.metadata[0].name
+              }
+            }
+
             init_container {
               name  = "dump"
-              image = var.mongodb_image
+              image = "postgres:16.3-alpine3.20"
               command = ["/bin/sh", "-ceu", <<-EOT
-                mongodump \
-                  --host mongodb \
-                  --db wekan \
-                  --archive=/backup/wekan.archive.gz \
-                  --gzip
+                pg_dump \
+                  --format=custom \
+                  --no-owner \
+                  --no-privileges \
+                  --file=/backup/postgres.dump
+                pg_restore --list /backup/postgres.dump >/dev/null
+              EOT
+              ]
+
+              env {
+                name  = "PGDATABASE"
+                value = "postgres"
+              }
+
+              env {
+                name  = "PGHOST"
+                value = kubernetes_service_v1.postgres.metadata[0].name
+              }
+
+              env {
+                name = "PGPASSWORD"
+
+                value_from {
+                  secret_key_ref {
+                    name = kubernetes_secret_v1.postgres.metadata[0].name
+                    key  = "password"
+                  }
+                }
+              }
+
+              env {
+                name  = "PGUSER"
+                value = "postgres"
+              }
+
+              volume_mount {
+                name       = "backup"
+                mount_path = "/backup"
+              }
+            }
+
+            init_container {
+              name  = "archive"
+              image = "alpine:3.23"
+              command = ["/bin/sh", "-ceu", <<-EOT
+                tar -czf /backup/data.tar.gz -C /data .
+                tar -tzf /backup/data.tar.gz >/dev/null
+                tar -czf /backup/vaultwarden.tar.gz \
+                  -C /backup postgres.dump data.tar.gz
+                tar -tzf /backup/vaultwarden.tar.gz >/dev/null
               EOT
               ]
 
               volume_mount {
                 name       = "backup"
                 mount_path = "/backup"
+              }
+
+              volume_mount {
+                name       = "vault"
+                mount_path = "/data"
+                read_only  = true
               }
             }
 
@@ -97,8 +156,8 @@ resource "kubernetes_cron_job_v1" "mongodb_backup" {
               command = ["/bin/sh", "-ceu", <<-EOT
                 timestamp="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
                 aws s3 cp \
-                  /backup/wekan.archive.gz \
-                  "s3://$${S3_BUCKET}/wekan/$${timestamp}.archive.gz" \
+                  /backup/vaultwarden.tar.gz \
+                  "s3://$${S3_BUCKET}/vaultwarden/$${timestamp}.tar.gz" \
                   --only-show-errors
               EOT
               ]
