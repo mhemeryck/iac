@@ -41,6 +41,24 @@ resource "kubernetes_secret_v1" "postgres" {
   }
 }
 
+locals {
+  postgres_database_url = "postgresql://postgres:${urlencode(kubernetes_secret_v1.postgres.data["password"])}@postgres:5432"
+}
+
+resource "kubernetes_secret_v1_data" "postgres_connection" {
+  metadata {
+    name      = kubernetes_secret_v1.postgres.metadata[0].name
+    namespace = kubernetes_namespace_v1.bitwarden.metadata[0].name
+  }
+
+  data = {
+    database_url = local.postgres_database_url
+  }
+
+  # The existing database_url key was originally created by kubectl.
+  force = true
+}
+
 resource "kubernetes_persistent_volume_claim_v1" "vault" {
   metadata {
     name      = "vault"
@@ -86,7 +104,7 @@ resource "kubernetes_persistent_volume_claim_v1" "postgres" {
 resource "kubernetes_deployment_v1" "bitwarden" {
   wait_for_rollout = false
 
-  depends_on = [kubernetes_secret_v1.vault, kubernetes_secret_v1.postgres]
+  depends_on = [kubernetes_secret_v1.vault, kubernetes_secret_v1_data.postgres_connection]
 
   metadata {
     name      = "bitwarden"

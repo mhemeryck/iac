@@ -121,7 +121,8 @@ In case of restoring an older <dump> folder:
 
 `envs/mhemeryck/vaultwarden` manages the existing `bitwarden` namespace, including its two Secrets and two data PVCs, in a separate S3-backed Terraform state.
 The existing resources were imported without replacing or changing them.
-Existing Secret data is stored in state and left unchanged by Terraform, so no local `secrets.yaml` is needed to manage the deployment.
+Existing credentials are stored in state and left unchanged by Terraform, so no local `secrets.yaml` is needed to manage the deployment.
+Terraform derives the Postgres `database_url` key from the imported `password` key without duplicating the password in HCL.
 The state contains plaintext Secret values; restrict access to the state bucket accordingly.
 The cert-manager TLS Secret remains managed by cert-manager.
 
