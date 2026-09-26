@@ -98,9 +98,20 @@ Archive check; AWS identity with bucket read access:
     tar -xzf vaultwarden-restore/data.tar.gz -C vaultwarden-restore/data
     docker run --rm -v "$PWD/vaultwarden-restore:/backup:ro" postgres:16.3-alpine3.20 pg_restore --list /backup/postgres.dump
 
+### cert-manager issuers
+
+Terraform module: `cert-manager-issuers/`
+Root: `envs/mhemeryck/cert-manager-issuers/`
+Production and staging ClusterIssuers are imported into the S3-backed Terraform state.
+cert-manager v1.15.1 itself is still installed from the upstream release manifest:
+
+    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.1/cert-manager.yaml
+
+If managing that external installation becomes necessary, use a separate Terraform root with a pinned manifest and import the existing CRDs and workloads before applying changes.
+If the webhook rejects changes because its CA expired, rotate its generated `cert-manager-webhook-ca` Secret in the `cert-manager` namespace and verify the webhook trust bundle refreshes before retrying.
+
 ## Kubernetes manifests
 
-cert-manager v1.15.1 and staging/production issuers: `./apply_manifests.sh`
 Facturette: `facturette.yaml`
 
 ### Goalkeepr bootstrap
