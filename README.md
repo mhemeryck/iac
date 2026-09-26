@@ -112,10 +112,17 @@ If the webhook rejects changes because its CA expired, rotate its generated `cer
 
 ## Kubernetes manifests
 
-Facturette: `facturette.yaml`
+Facturette: `facturette.yaml` until its resources are imported into application-owned Terraform
 
 ### Goalkeepr bootstrap
 
 Terraform module: `goalkeepr-bootstrap/`
 Root: `envs/mhemeryck/goalkeepr-bootstrap/`
 The existing namespace, service account, Role, RoleBinding and token Secret are imported into the S3-backed Terraform state.
+
+### Facturette bootstrap
+
+Terraform module: `facturette-bootstrap/`
+Root: `envs/mhemeryck/facturette-bootstrap/`
+The existing `facturette` namespace is imported into the S3-backed state; the service account, Role, RoleBinding and token Secret are managed here.
+The application resources and backups are managed from `facturette/infra/` in the Facturette repository.
