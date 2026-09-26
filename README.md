@@ -112,7 +112,7 @@ If the webhook rejects changes because its CA expired, rotate its generated `cer
 
 ## Kubernetes manifests
 
-Facturette: `facturette.yaml` until its resources are imported into application-owned Terraform
+Facturette application resources and backups are managed from `facturette/infra/` in the Facturette repository
 
 ### Goalkeepr bootstrap
 
