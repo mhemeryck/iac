@@ -101,4 +101,10 @@ Archive check; AWS identity with bucket read access:
 ## Kubernetes manifests
 
 cert-manager v1.15.1 and staging/production issuers: `./apply_manifests.sh`
-Facturette: `facturette.yaml`; Goalkeepr bootstrap RBAC: `goalkeepr.yaml`
+Facturette: `facturette.yaml`
+
+### Goalkeepr bootstrap
+
+Terraform module: `goalkeepr-bootstrap/`
+Root: `envs/mhemeryck/goalkeepr-bootstrap/`
+The existing namespace, service account, Role, RoleBinding and token Secret are imported into the S3-backed Terraform state.
