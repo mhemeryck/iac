@@ -8,7 +8,7 @@ Terraform for most resources; Kubernetes manifests for the rest
 
 ## Structure
 
-Terraform modules in top-level directories such as `node/`, `wekan/` and `vaultwarden/`
+Terraform modules in top-level directories such as `node/` and `vaultwarden/`
 Instantiations in `envs/mhemeryck/<module>/`, each with its own S3 state key
 Shared state bucket from `state-backend/`; manually managed Kubernetes resources in root-level YAML
 Shared backup storage module in `backup-storage/`; separate buckets and upload identities per service
@@ -19,10 +19,10 @@ Devenv for Terraform, AWS CLI, SecretSpec and `pass`
 Hetzner token and kubeconfig via SecretSpec; AWS profile `mhemeryck`
 Shared Terraform provider cache at `~/.cache/terraform/plugin-cache`
 
-Example, Wekan root:
+Example, node root:
 
     devenv shell
-    cd envs/mhemeryck/wekan
+    cd envs/mhemeryck/node
     terraform init
     terraform plan
     terraform apply
@@ -49,28 +49,13 @@ AWS OIDC provider and `home-github-actions` role
 Root: `envs/mhemeryck/github-actions/`
 Administrator access for trusted `master` workflows
 
-### wekan
+### Wekan archive
 
-Planning board and MongoDB in the `wekan` namespace
-Root: `envs/mhemeryck/wekan/`
-Daily MongoDB backups at 02:00 cluster time; 90-day Object Lock retention in `wekan-backups-<account-id>/wekan/`
-
-On-demand backup:
-
-    kubectl create job -n wekan --from=cronjob/mongodb-backup mongodb-backup-manual
-    kubectl wait -n wekan --for=condition=complete job/mongodb-backup-manual --timeout=10m
-    kubectl logs -n wekan job/mongodb-backup-manual -c upload
-    aws s3 ls "s3://wekan-backups-$(aws sts get-caller-identity --query Account --output text)/wekan/"
-
-Restore check; isolated MongoDB, AWS identity with bucket read access:
-
-    bucket="wekan-backups-$(aws sts get-caller-identity --query Account --output text)"
-    aws s3 cp "s3://$bucket/wekan/TIMESTAMP.archive.gz" wekan.archive.gz
-    docker run -d --rm --name wekan-restore mongo:6.0.26-jammy
-    docker cp wekan.archive.gz wekan-restore:/tmp/wekan.archive.gz
-    docker exec wekan-restore mongorestore --gzip --archive=/tmp/wekan.archive.gz --nsInclude='wekan.*'
-    docker exec wekan-restore mongosh --quiet --eval 'db.getSiblingDB("wekan").getCollectionNames()'
-    docker stop wekan-restore
+Wekan was retired in September 2026 after moving the remaining tasks to Google Tasks
+The final MongoDB archive is `~/Data/wekan-2026-09-27T14-56-40Z.archive.gz`
+S3 copy: `s3://wekan-backups-109185239364/wekan/2026-09-27T14-56-40Z.archive.gz`
+Root `envs/mhemeryck/wekan/` retains the S3 backup bucket and its 90-day Object Lock and expiration policy
+The bucket can be removed after the retained archives expire
 
 ### vaultwarden
 
