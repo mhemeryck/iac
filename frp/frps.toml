@@ -1,0 +1,18 @@
+bindAddr = "0.0.0.0"
+bindPort = 7000
+
+auth.method = "token"
+auth.additionalScopes = ["HeartBeats", "NewWorkConns"]
+auth.tokenSource.type = "file"
+auth.tokenSource.file.path = "/etc/frp/auth/token"
+
+transport.tls.force = true
+transport.tls.certFile = "/etc/frp/tls/tls.crt"
+transport.tls.keyFile = "/etc/frp/tls/tls.key"
+
+allowPorts = [{ single = 8080 }]
+maxPortsPerClient = 1
+
+log.to = "console"
+log.level = "info"
+log.disablePrintColor = true

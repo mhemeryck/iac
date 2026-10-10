@@ -77,6 +77,14 @@ resource "hcloud_firewall" "k3s" {
       "::/0"
     ]
   }
+
+  # Kubernetes NodePort for the authenticated Home Assistant frp tunnel.
+  rule {
+    direction  = "in"
+    protocol   = "tcp"
+    port       = "30700"
+    source_ips = ["0.0.0.0/0", "::/0"]
+  }
 }
 
 data "external" "kubeconfig" {
