@@ -1,0 +1,17 @@
+bindAddr = "0.0.0.0"
+bindPort = 7000
+
+auth.method = "token"
+auth.additionalScopes = ["HeartBeats", "NewWorkConns"]
+auth.tokenSource.type = "file"
+auth.tokenSource.file.path = "/etc/frp/auth/token"
+
+# Traefik terminates WSS; this listener is available only inside Kubernetes.
+transport.tls.force = false
+
+allowPorts = [{ single = 8080 }]
+maxPortsPerClient = 1
+
+log.to = "console"
+log.level = "info"
+log.disablePrintColor = true

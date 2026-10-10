@@ -26,6 +26,13 @@ resource "hcloud_zone_rrset" "bitwarden" {
   records = [{ value = hcloud_server.k3s.ipv4_address }]
 }
 
+resource "hcloud_zone_rrset" "hass" {
+  zone    = hcloud_zone.xyz.name
+  name    = "hass"
+  type    = "A"
+  records = [{ value = hcloud_server.k3s.ipv4_address }]
+}
+
 resource "hcloud_zone_rrset" "facturette" {
   zone    = hcloud_zone.xyz.name
   name    = "facturette"

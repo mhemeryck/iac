@@ -83,6 +83,16 @@ Archive check; AWS identity with bucket read access:
     tar -xzf vaultwarden-restore/data.tar.gz -C vaultwarden-restore/data
     docker run --rm -v "$PWD/vaultwarden-restore:/backup:ro" postgres:16.3-alpine3.20 pg_restore --list /backup/postgres.dump
 
+### Home Assistant remote access
+
+Terraform module: `frp/`
+Root: `envs/mhemeryck/frp/`
+Authenticated WSS tunnel through Traefik; HTTPS at `hass.mhemeryck.xyz`
+Terraform generates the shared token and stores it in the remote state
+Copy the sensitive output into pass for the home client
+DNS is managed by the node module; the tunnel uses existing port 443
+Deployment and token rotation: [frp/README.md](frp/README.md)
+
 ### cert-manager issuers
 
 Terraform module: `cert-manager-issuers/`
