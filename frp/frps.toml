@@ -6,9 +6,8 @@ auth.additionalScopes = ["HeartBeats", "NewWorkConns"]
 auth.tokenSource.type = "file"
 auth.tokenSource.file.path = "/etc/frp/auth/token"
 
-transport.tls.force = true
-transport.tls.certFile = "/etc/frp/tls/tls.crt"
-transport.tls.keyFile = "/etc/frp/tls/tls.key"
+# Traefik terminates WSS; this listener is available only inside Kubernetes.
+transport.tls.force = false
 
 allowPorts = [{ single = 8080 }]
 maxPortsPerClient = 1

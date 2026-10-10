@@ -31,15 +31,11 @@ resource "kubernetes_config_map_v1" "server" {
   }
 
   data = {
-    "frps.toml"   = file("${path.module}/frps.toml")
-    "run-frps.sh" = file("${path.module}/run-frps.sh")
+    "frps.toml" = file("${path.module}/frps.toml")
   }
 }
 
 resource "kubernetes_deployment_v1" "server" {
-  # The ingress provisions the TLS Secret asynchronously through cert-manager.
-  wait_for_rollout = false
-
   metadata {
     name      = "frps"
     namespace = local.namespace
@@ -60,7 +56,8 @@ resource "kubernetes_deployment_v1" "server" {
       metadata {
         labels = local.labels
         annotations = {
-          "checksum/config" = sha256(jsonencode(kubernetes_config_map_v1.server.data))
+          "checksum/config"     = sha256(jsonencode(kubernetes_config_map_v1.server.data))
+          "secret/auth-version" = kubernetes_secret_v1.auth.metadata[0].resource_version
         }
       }
 
@@ -75,9 +72,9 @@ resource "kubernetes_deployment_v1" "server" {
         }
 
         container {
-          name    = "frps"
-          image   = "ghcr.io/fatedier/frps:v0.71.0"
-          command = ["/bin/sh", "/etc/frp/config/run-frps.sh"]
+          name  = "frps"
+          image = "ghcr.io/fatedier/frps:v0.71.0"
+          args  = ["-c", "/etc/frp/config/frps.toml"]
 
           port {
             name           = "tunnel"
@@ -128,12 +125,6 @@ resource "kubernetes_deployment_v1" "server" {
             mount_path = "/etc/frp/auth"
             read_only  = true
           }
-
-          volume_mount {
-            name       = "tls"
-            mount_path = "/etc/frp/tls"
-            read_only  = true
-          }
         }
 
         volume {
@@ -149,13 +140,6 @@ resource "kubernetes_deployment_v1" "server" {
             secret_name = kubernetes_secret_v1.auth.metadata[0].name
           }
         }
-
-        volume {
-          name = "tls"
-          secret {
-            secret_name = local.tls_secret_name
-          }
-        }
       }
     }
   }
@@ -168,14 +152,12 @@ resource "kubernetes_service_v1" "tunnel" {
   }
 
   spec {
-    type     = "NodePort"
     selector = local.labels
 
     port {
       name        = "tunnel"
       port        = 7000
       target_port = "tunnel"
-      node_port   = var.tunnel_node_port
     }
   }
 }
@@ -220,6 +202,20 @@ resource "kubernetes_ingress_v1" "homeassistant" {
       host = var.hostname
 
       http {
+        path {
+          path      = "/~!frp"
+          path_type = "Prefix"
+
+          backend {
+            service {
+              name = kubernetes_service_v1.tunnel.metadata[0].name
+              port {
+                number = 7000
+              }
+            }
+          }
+        }
+
         path {
           path      = "/"
           path_type = "Prefix"

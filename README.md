@@ -87,10 +87,10 @@ Archive check; AWS identity with bucket read access:
 
 Terraform module: `frp/`
 Root: `envs/mhemeryck/frp/`
-Authenticated TLS tunnel from the home cluster; HTTPS at `hass.mhemeryck.xyz`
+Authenticated WSS tunnel through Traefik; HTTPS at `hass.mhemeryck.xyz`
 Terraform generates the shared token and stores it in the remote state
 Copy the sensitive output into pass for the home client
-DNS and tunnel firewall rule are managed by the node module
+DNS is managed by the node module; the tunnel uses existing port 443
 Deployment and token rotation: [frp/README.md](frp/README.md)
 
 ### cert-manager issuers
