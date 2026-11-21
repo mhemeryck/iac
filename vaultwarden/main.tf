@@ -150,7 +150,7 @@ resource "kubernetes_deployment_v1" "bitwarden" {
 
         container {
           name  = "bitwarden"
-          image = "vaultwarden/server:1.37.2-alpine"
+          image = "vaultwarden/server:1.37.5-alpine"
 
           volume_mount {
             name       = "vault"
